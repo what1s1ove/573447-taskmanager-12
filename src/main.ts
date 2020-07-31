@@ -4,27 +4,49 @@ import { createBoardTemplate } from "~/view/board";
 import { createTaskEditTemplate } from "~/view/task-edit";
 import { createTaskTemplate } from "~/view/task";
 import { createLoadMoreButtonTemplate } from "~/view/load-more-button";
+import { renderTemplate } from "~/helpers";
+import { AdjacentHTMLPlace } from "./common/enums";
 
 const TASK_COUNT = 3;
-
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
 
-render(siteHeaderElement, createSiteMenuTemplate(), `beforeend`);
-render(siteMainElement, createFilterTemplate(), `beforeend`);
-render(siteMainElement, createBoardTemplate(), `beforeend`);
+renderTemplate(
+  siteHeaderElement,
+  createSiteMenuTemplate(),
+  AdjacentHTMLPlace.BEFORE_END
+);
+renderTemplate(
+  siteMainElement,
+  createFilterTemplate(),
+  AdjacentHTMLPlace.BEFORE_END
+);
+renderTemplate(
+  siteMainElement,
+  createBoardTemplate(),
+  AdjacentHTMLPlace.BEFORE_END
+);
 
 const boardElement = siteMainElement.querySelector(`.board`);
 const taskListElement = boardElement.querySelector(`.board__tasks`);
 
-render(taskListElement, createTaskEditTemplate(), `beforeend`);
+renderTemplate(
+  taskListElement,
+  createTaskEditTemplate(),
+  AdjacentHTMLPlace.BEFORE_END
+);
 
 for (let i = 0; i < TASK_COUNT; i++) {
-  render(taskListElement, createTaskTemplate(), `beforeend`);
+  renderTemplate(
+    taskListElement,
+    createTaskTemplate(),
+    AdjacentHTMLPlace.BEFORE_END
+  );
 }
 
-render(boardElement, createLoadMoreButtonTemplate(), `beforeend`);
+renderTemplate(
+  boardElement,
+  createLoadMoreButtonTemplate(),
+  AdjacentHTMLPlace.BEFORE_END
+);
