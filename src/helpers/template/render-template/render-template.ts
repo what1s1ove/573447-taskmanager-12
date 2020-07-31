@@ -1,9 +1,7 @@
-import { AdjacentHTMLPlace } from "~/common/enums";
-
 const renderTemplate = (
   container: Element,
   template: string,
-  place: AdjacentHTMLPlace
+  place: InsertPosition
 ) => {
   container.insertAdjacentHTML(place, template);
 };

@@ -23,5 +23,13 @@ rules:
   no-plusplus:
     - error
     - allowForLoopAfterthoughts: true
+  comma-dangle:
+    - error
+    - only-multiline
+    - arrays: never
+      objects: always
+      imports: never
+      exports: never
+      functions: never
   import/prefer-default-export: off
 
