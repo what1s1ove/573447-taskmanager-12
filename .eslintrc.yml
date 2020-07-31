@@ -9,6 +9,13 @@ env:
   es6: true
   browser: true
 
+settings:
+  import/resolver:
+    alias:
+      extensions: ['.ts']
+      map:
+        - ['~', './src']
+
 rules:
   '@typescript-eslint/quotes':
     - error
@@ -16,5 +23,5 @@ rules:
   no-plusplus:
     - error
     - allowForLoopAfterthoughts: true
-  # implicit-arrow-linebreak: off
+  import/prefer-default-export: off
 

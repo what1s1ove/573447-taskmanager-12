@@ -13,6 +13,12 @@ module.exports = {
     port: 1337,
     watchContentBase: true,
   },
+  resolve: {
+    extensions: [`.js`, `.ts`],
+    alias: {
+      "~": path.resolve(__dirname, "src/"),
+    },
+  },
   module: {
     rules: [
       {
