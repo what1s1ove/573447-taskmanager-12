@@ -14,7 +14,7 @@ module.exports = {
     watchContentBase: true,
   },
   resolve: {
-    extensions: [`.js`, `.ts`],
+    extensions: [".js", ".ts"],
     alias: {
       "~": path.resolve(__dirname, "src/"),
     },
