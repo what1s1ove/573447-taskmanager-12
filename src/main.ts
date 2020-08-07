@@ -9,6 +9,8 @@ import { AdjacentHTMLPlace } from "./common/enums";
 
 const TASK_COUNT = 3;
 
+// const tasks = Array.from(new Array(TASK_COUNT), () => generateTask());
+
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
 
