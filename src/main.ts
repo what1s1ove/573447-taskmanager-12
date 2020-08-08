@@ -4,12 +4,12 @@ import { createBoardTemplate } from '~/view/board';
 import { createTaskEditTemplate } from '~/view/task-edit';
 import { createTaskTemplate } from '~/view/task';
 import { createLoadMoreButtonTemplate } from '~/view/load-more-button';
-import { renderTemplate } from '~/helpers';
+import { renderTemplate, generateTasks } from '~/helpers';
 import { AdjacentHTMLPlace } from './common/enums';
 
 const TASK_COUNT = 3;
 
-// const tasks = Array.from(new Array(TASK_COUNT), () => generateTask());
+const tasks = generateTasks(TASK_COUNT);
 
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
@@ -42,7 +42,7 @@ renderTemplate(
 for (let i = 0; i < TASK_COUNT; i++) {
   renderTemplate(
     taskListElement,
-    createTaskTemplate(),
+    createTaskTemplate(tasks[i]),
     AdjacentHTMLPlace.BEFORE_END
   );
 }

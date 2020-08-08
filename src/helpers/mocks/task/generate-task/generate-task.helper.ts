@@ -18,12 +18,12 @@ const DEFAULT_REPEATING = {
 
 const generateTask = (): ITask => {
   const dueDate = generateDate();
-  const repeating = dueDate ? generateRepeating() : DEFAULT_REPEATING;
+  const repeating = dueDate ? DEFAULT_REPEATING : generateRepeating();
 
   return {
-    description: generateDescription(),
     dueDate,
     repeating,
+    description: generateDescription(),
     color: getRandomColor(),
     isArchive: Boolean(getRandomNumber(0, 1)),
     isFavorite: Boolean(getRandomNumber(0, 1)),

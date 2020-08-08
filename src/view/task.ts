@@ -1,4 +1,6 @@
-const createTaskTemplate = () => `<article class="card card--black">
+import { ITask } from '~/common/interfaces';
+
+const createTaskTemplate = (task: ITask) => `<article class="card card--black">
     <div class="card__form">
       <div class="card__inner">
         <div class="card__control">
@@ -21,7 +23,7 @@ const createTaskTemplate = () => `<article class="card card--black">
           </svg>
         </div>
         <div class="card__textarea-wrap">
-          <p class="card__text">Example default task with default color.</p>
+          <p class="card__text">${task.description}</p>
         </div>
         <div class="card__settings">
           <div class="card__details">
