@@ -1,6 +1,6 @@
-import { ITaskRepeating } from "~/common/interfaces";
-import { getRandomNumber } from "~/helpers/number";
-import { TaskRepeatDay } from "~/common/enums";
+import { ITaskRepeating } from '~/common/interfaces';
+import { getRandomNumber } from '~/helpers/number';
+import { TaskRepeatDay } from '~/common/enums';
 
 const generateRepeating = (): ITaskRepeating => {
   const repeating = Object.values(TaskRepeatDay).reduce(

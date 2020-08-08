@@ -1,10 +1,10 @@
-import { ITask } from "~/common/interfaces";
-import { TaskRepeatDay } from "~/common/enums";
-import { getRandomNumber } from "../../../number";
-import { generateDate } from "../generate-date/generate-date.helper";
-import { generateRepeating } from "../generate-repeating/generate-repeating.helper";
-import { getRandomColor } from "../get-random-color/get-random-color.helper";
-import { generateDescription } from "../generate-description/generate-description.helper";
+import { ITask } from '~/common/interfaces';
+import { TaskRepeatDay } from '~/common/enums';
+import { getRandomNumber } from '../../../number';
+import { generateDate } from '../generate-date/generate-date.helper';
+import { generateRepeating } from '../generate-repeating/generate-repeating.helper';
+import { getRandomColor } from '../get-random-color/get-random-color.helper';
+import { generateDescription } from '../generate-description/generate-description.helper';
 
 const DEFAULT_REPEATING = {
   [TaskRepeatDay.MO]: false,

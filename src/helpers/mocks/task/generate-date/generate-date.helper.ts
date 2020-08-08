@@ -1,4 +1,4 @@
-import { getRandomNumber } from "~/helpers/number";
+import { getRandomNumber } from '~/helpers/number';
 
 const generateDate = (): Date | null => {
   const isDate = Boolean(getRandomNumber(0, 1));

@@ -1,5 +1,5 @@
-import { getRandomItem } from "~/helpers/array";
-import { TaskColor } from "~/common/enums";
+import { getRandomItem } from '~/helpers/array';
+import { TaskColor } from '~/common/enums';
 
 const colors = Object.values(TaskColor);
 

@@ -1,4 +1,4 @@
-import { getRandomItem } from "~/helpers/array";
+import { getRandomItem } from '~/helpers/array';
 
 const descriptions = [
   `Изучить теорию`,

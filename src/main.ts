@@ -1,11 +1,11 @@
-import { createSiteMenuTemplate } from "~/view/site-menu";
-import { createFilterTemplate } from "~/view/filter";
-import { createBoardTemplate } from "~/view/board";
-import { createTaskEditTemplate } from "~/view/task-edit";
-import { createTaskTemplate } from "~/view/task";
-import { createLoadMoreButtonTemplate } from "~/view/load-more-button";
-import { renderTemplate } from "~/helpers";
-import { AdjacentHTMLPlace } from "./common/enums";
+import { createSiteMenuTemplate } from '~/view/site-menu';
+import { createFilterTemplate } from '~/view/filter';
+import { createBoardTemplate } from '~/view/board';
+import { createTaskEditTemplate } from '~/view/task-edit';
+import { createTaskTemplate } from '~/view/task';
+import { createLoadMoreButtonTemplate } from '~/view/load-more-button';
+import { renderTemplate } from '~/helpers';
+import { AdjacentHTMLPlace } from './common/enums';
 
 const TASK_COUNT = 3;
 
