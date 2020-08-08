@@ -1,9 +1,9 @@
-import { createSiteMenuTemplate } from '~/view/site-menu';
-import { createFilterTemplate } from '~/view/filter';
-import { createBoardTemplate } from '~/view/board';
-import { createTaskEditTemplate } from '~/view/task-edit';
-import { createTaskTemplate } from '~/view/task';
-import { createLoadMoreButtonTemplate } from '~/view/load-more-button';
+import { createSiteMenuTemplate } from '~/view/site-menu/site-menu';
+import { createFilterTemplate } from '~/view/filter/filter';
+import { createBoardTemplate } from '~/view/board/board';
+import { createTaskEditTemplate } from '~/view/task-edit/task-edit';
+import { createTaskTemplate } from '~/view/task/task';
+import { createLoadMoreButtonTemplate } from '~/view/load-more-button/load-more-button';
 import { renderTemplate, generateTasks } from '~/helpers';
 import { AdjacentHTMLPlace } from './common/enums';
 
