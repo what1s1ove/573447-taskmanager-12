@@ -1,14 +1,16 @@
 import { getFormattedDate } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { DateFormatType } from '~/common/enums';
+import { isExpired } from './helpers';
 
 const createTaskTemplate = (task: ITask) => {
   const { color, description, dueDate } = task;
 
   const date = dueDate ? getFormattedDate(DateFormatType.SLASH, dueDate) : ``;
+  const deadlineClassName = isExpired(dueDate) ? `card--deadline` : ``;
 
   return `
-  <article class="card card--${color}">
+  <article class="card card--${color} ${deadlineClassName}">
     <div class="card__form">
       <div class="card__inner">
         <div class="card__control">

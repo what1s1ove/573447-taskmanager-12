@@ -1,2 +1,2 @@
-export * from "./task.interface";
-export * from "./task-repeating.interface";
+export * from './task.interface';
+export * from './task-repeating.interface';

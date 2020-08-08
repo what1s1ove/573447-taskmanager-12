@@ -1,9 +1,10 @@
-import { TaskColor } from "~/common/enums";
-import { ITaskRepeating } from "./task-repeating.interface";
+import { TaskColor } from '~/common/enums';
+import { TaskDueDate } from '~/common/types';
+import { ITaskRepeating } from './task-repeating.interface';
 
 interface ITask {
   description: string;
-  dueDate: Date | string | null;
+  dueDate: TaskDueDate;
   repeating: ITaskRepeating;
   color: TaskColor;
   isArchive: boolean;
