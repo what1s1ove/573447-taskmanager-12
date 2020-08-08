@@ -6,7 +6,7 @@ import {
   filterTaskByRepeatingCb,
   filterTaskByArchiveCb,
 } from '~/helpers/filter';
-import { ITask } from '~/common/interfaces';
+import { ITask, IFilter } from '~/common/interfaces';
 import { FilterType } from '~/common/enums';
 
 const taskToFilterMap = {
@@ -18,15 +18,15 @@ const taskToFilterMap = {
   [FilterType.ARCHIVE]: (tasks: ITask[]) => tasks.filter(filterTaskByArchiveCb).length,
 };
 
-const generateFilter = (tasks) => {
-  const filter = Object.entries(taskToFilterMap).map(
+const generateFilters = (tasks: ITask[]): IFilter[] => {
+  const filters = Object.entries(taskToFilterMap).map(
     ([filterName, countTasks]) => ({
-      name: filterName,
+      name: filterName as FilterType,
       count: countTasks(tasks),
     })
   );
 
-  return filter;
+  return filters;
 };
 
-export { generateFilter };
+export { generateFilters };

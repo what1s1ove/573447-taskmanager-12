@@ -1,1 +1,1 @@
-export * from './generate-filter/generate-filter.heler';
+export * from './generate-filters/generate-filters.helper';

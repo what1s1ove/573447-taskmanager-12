@@ -1,15 +1,16 @@
+import { renderTemplate, generateTasks, generateFilters } from '~/helpers';
 import { createSiteMenuTemplate } from '~/view/site-menu/site-menu';
 import { createFilterTemplate } from '~/view/filter/filter';
 import { createBoardTemplate } from '~/view/board/board';
 import { createTaskEditTemplate } from '~/view/task-edit/task-edit';
 import { createTaskTemplate } from '~/view/task/task';
 import { createLoadMoreButtonTemplate } from '~/view/load-more-button/load-more-button';
-import { renderTemplate, generateTasks } from '~/helpers';
 import { AdjacentHTMLPlace } from './common/enums';
 
 const TASK_COUNT = 4;
 
 const tasks = generateTasks(TASK_COUNT);
+const filters = generateFilters(tasks);
 
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
@@ -21,7 +22,7 @@ renderTemplate(
 );
 renderTemplate(
   siteMainElement,
-  createFilterTemplate(),
+  createFilterTemplate(filters),
   AdjacentHTMLPlace.BEFORE_END
 );
 renderTemplate(
