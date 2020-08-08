@@ -1,7 +1,7 @@
+import { getCurrentDate } from '~/helpers/date';
 import { TaskDueDate } from '~/common/types';
-import { getCurrentDate } from '../date';
 
-const checkIsExpired = (taskDueDate: TaskDueDate) => {
+const checkIsTaskExpired = (taskDueDate: TaskDueDate) => {
   if (!taskDueDate) {
     return false;
   }
@@ -14,4 +14,4 @@ const checkIsExpired = (taskDueDate: TaskDueDate) => {
   return isExpired;
 };
 
-export { checkIsExpired };
+export { checkIsTaskExpired };

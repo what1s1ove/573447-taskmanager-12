@@ -1,4 +1,4 @@
-import { getCurrentDate } from '../date';
+import { getCurrentDate } from '~/helpers/date';
 import { TaskDueDate } from '~/common/types';
 
 const checkIsTaskExpiringToday = (taskDueDate: TaskDueDate) => {

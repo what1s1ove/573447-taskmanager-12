@@ -1,4 +1,4 @@
-import { checkIsExpired, checkIsRepeating } from '~/helpers';
+import { checkIsTaskExpired, checkIsTaskRepeating } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { TaskColor } from '~/common/enums';
 import { TASK_DEFAULT_REPEATING } from '~/common/constants';
@@ -20,8 +20,8 @@ const createTaskEditTemplate = (task: ITask) => {
   const repeatingTemplate = createTaskEditRepeatingTemplate(repeating);
   const colorsTemplate = createTaskEditColorsTemplate(color);
 
-  const deadlineClassName = checkIsExpired(dueDate) ? `card--deadline` : ``;
-  const repeatingClassName = checkIsRepeating(repeating) ? `card--repeat` : ``;
+  const deadlineClassName = checkIsTaskExpired(dueDate) ? `card--deadline` : ``;
+  const repeatingClassName = checkIsTaskRepeating(repeating) ? `card--repeat` : ``;
 
   return `
   <article class="card card--edit card--${color} ${deadlineClassName} ${repeatingClassName}">

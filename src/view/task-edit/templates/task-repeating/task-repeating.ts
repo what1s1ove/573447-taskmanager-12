@@ -1,9 +1,9 @@
-import { checkIsRepeating } from '~/helpers';
+import { checkIsTaskRepeating } from '~/helpers';
 import { ITaskRepeating } from '~/common/interfaces';
 import { createTaskEditRepeatingOptionTemplate } from './templates/task-repeating-option/task-repeating-option';
 
 const createTaskEditRepeatingTemplate = (repeating: ITaskRepeating) => {
-  const isRepeating = checkIsRepeating(repeating);
+  const isRepeating = checkIsTaskRepeating(repeating);
 
   return `
   <button class="card__repeat-toggle" type="button">
