@@ -1,3 +1,4 @@
+import { ITaskRepeating } from '~/common/interfaces';
 import { TaskDueDate } from '~/common/types';
 
 const isExpired = (taskDueDate: TaskDueDate) => {
@@ -14,4 +15,6 @@ const isExpired = (taskDueDate: TaskDueDate) => {
   return currentDate.getTime() > DueDate.getTime();
 };
 
-export { isExpired };
+const isRepeating = (repeating: ITaskRepeating) => Object.values(repeating).some(Boolean);
+
+export { isExpired, isRepeating };

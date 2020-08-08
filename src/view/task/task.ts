@@ -1,28 +1,44 @@
 import { getFormattedDate } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { DateFormatType } from '~/common/enums';
-import { isExpired } from './helpers';
+import { isExpired, isRepeating } from './helpers';
 
 const createTaskTemplate = (task: ITask) => {
-  const { color, description, dueDate } = task;
+  const {
+    color,
+    description,
+    dueDate,
+    repeating,
+    isArchive,
+    isFavorite,
+  } = task;
 
   const date = dueDate ? getFormattedDate(DateFormatType.SLASH, dueDate) : ``;
+
   const deadlineClassName = isExpired(dueDate) ? `card--deadline` : ``;
+  const repeatClassName = isRepeating(repeating) ? `card--repeat` : ``;
+  const archiveClassName = isArchive
+    ? `card__btn--archive card__btn--disabled`
+    : `card__btn--archive`;
+
+  const favoriteClassName = isFavorite
+    ? `card__btn--favorites card__btn--disabled`
+    : `card__btn--favorites`;
 
   return `
-  <article class="card card--${color} ${deadlineClassName}">
+  <article class="card card--${color} ${deadlineClassName} ${repeatClassName}">
     <div class="card__form">
       <div class="card__inner">
         <div class="card__control">
           <button type="button" class="card__btn card__btn--edit">
             edit
           </button>
-          <button type="button" class="card__btn card__btn--archive">
+          <button type="button" class="card__btn ${archiveClassName}">
             archive
           </button>
           <button
             type="button"
-            class="card__btn card__btn--favorites"
+            class="card__btn ${favoriteClassName}"
           >
             favorites
           </button>
