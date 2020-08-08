@@ -1,4 +1,5 @@
 import { TaskDueDate } from '~/common/types';
+import { getCurrentDate } from '../date';
 
 const checkIsExpired = (taskDueDate: TaskDueDate) => {
   if (!taskDueDate) {
@@ -6,10 +7,7 @@ const checkIsExpired = (taskDueDate: TaskDueDate) => {
   }
 
   const dueDate = new Date(taskDueDate);
-  let currentDate = new Date();
-
-  currentDate.setHours(23, 59, 59, 999);
-  currentDate = new Date(currentDate);
+  const currentDate = getCurrentDate();
 
   const isExpired = currentDate.getTime() > dueDate.getTime();
 
