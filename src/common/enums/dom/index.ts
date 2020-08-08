@@ -1,1 +1,1 @@
-export * from "./adjacent-html-place.enum";
+export * from './adjacent-html-place.enum';
