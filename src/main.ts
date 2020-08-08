@@ -7,7 +7,7 @@ import { createLoadMoreButtonTemplate } from '~/view/load-more-button/load-more-
 import { renderTemplate, generateTasks } from '~/helpers';
 import { AdjacentHTMLPlace } from './common/enums';
 
-const TASK_COUNT = 3;
+const TASK_COUNT = 4;
 
 const tasks = generateTasks(TASK_COUNT);
 
@@ -35,11 +35,11 @@ const taskListElement = boardElement.querySelector(`.board__tasks`);
 
 renderTemplate(
   taskListElement,
-  createTaskEditTemplate(),
+  createTaskEditTemplate(tasks[0]),
   AdjacentHTMLPlace.BEFORE_END
 );
 
-for (let i = 0; i < TASK_COUNT; i++) {
+for (let i = 1; i < TASK_COUNT; i++) {
   renderTemplate(
     taskListElement,
     createTaskTemplate(tasks[i]),

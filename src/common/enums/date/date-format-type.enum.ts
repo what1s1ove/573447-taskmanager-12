@@ -1,5 +1,5 @@
 enum DateFormatType {
-  SLASH = `slash`,
+  FULLMONTH_DAY = `fullMonthDay`,
 }
 
 export { DateFormatType };

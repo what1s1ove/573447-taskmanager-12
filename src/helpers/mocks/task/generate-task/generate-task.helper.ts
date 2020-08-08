@@ -1,24 +1,14 @@
 import { ITask } from '~/common/interfaces';
-import { TaskRepeatDay } from '~/common/enums';
+import { TASK_DEFAULT_REPEATING } from '~/common/constants';
 import { getRandomNumber } from '../../../number';
 import { generateDate } from '../generate-date/generate-date.helper';
 import { generateRepeating } from '../generate-repeating/generate-repeating.helper';
 import { getRandomColor } from '../get-random-color/get-random-color.helper';
 import { generateDescription } from '../generate-description/generate-description.helper';
 
-const DEFAULT_REPEATING = {
-  [TaskRepeatDay.MO]: false,
-  [TaskRepeatDay.TU]: false,
-  [TaskRepeatDay.WE]: false,
-  [TaskRepeatDay.TH]: false,
-  [TaskRepeatDay.FR]: false,
-  [TaskRepeatDay.SA]: false,
-  [TaskRepeatDay.SU]: false,
-};
-
 const generateTask = (): ITask => {
   const dueDate = generateDate();
-  const repeating = dueDate ? DEFAULT_REPEATING : generateRepeating();
+  const repeating = dueDate ? TASK_DEFAULT_REPEATING : generateRepeating();
 
   return {
     dueDate,

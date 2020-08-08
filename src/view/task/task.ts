@@ -1,7 +1,6 @@
-import { getFormattedDate } from '~/helpers';
+import { getFormattedDate, checkIsExpired, checkIsRepeating } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { DateFormatType } from '~/common/enums';
-import { isExpired, isRepeating } from './helpers';
 
 const createTaskTemplate = (task: ITask) => {
   const {
@@ -13,10 +12,12 @@ const createTaskTemplate = (task: ITask) => {
     isFavorite,
   } = task;
 
-  const date = dueDate ? getFormattedDate(DateFormatType.SLASH, dueDate) : ``;
+  const date = dueDate
+    ? getFormattedDate(DateFormatType.FULLMONTH_DAY, dueDate)
+    : ``;
 
-  const deadlineClassName = isExpired(dueDate) ? `card--deadline` : ``;
-  const repeatClassName = isRepeating(repeating) ? `card--repeat` : ``;
+  const deadlineClassName = checkIsExpired(dueDate) ? `card--deadline` : ``;
+  const repeatClassName = checkIsRepeating(repeating) ? `card--repeat` : ``;
   const archiveClassName = isArchive
     ? `card__btn--archive card__btn--disabled`
     : `card__btn--archive`;
