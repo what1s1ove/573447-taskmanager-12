@@ -1,8 +1,8 @@
-enum AdjacentHTMLPlace {
+enum RenderPosition {
   BEFORE_BEGIN = `beforebegin`,
   AFTER_BEGIN = `afterbegin`,
   BEFORE_END = `beforeend`,
   AFTER_END = `afterend`,
 }
 
-export { AdjacentHTMLPlace };
+export { RenderPosition };
