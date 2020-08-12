@@ -1,10 +1,25 @@
-const createBoardTemplate = () => `<section class="board container">
-    <div class="board__filter-list">
-      <a href="#" class="board__filter">SORT BY DEFAULT</a>
-      <a href="#" class="board__filter">SORT BY DATE up</a>
-      <a href="#" class="board__filter">SORT BY DATE down</a>
-    </div>
-    <div class="board__tasks"></div>
-  </section>`;
+import { createElement } from '~/helpers/dom/index';
 
-export { createBoardTemplate };
+class Board {
+  #element: Element | null = null;
+
+  get node() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return `
+      <section class="board container"></section>
+    `;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+export default Board;
