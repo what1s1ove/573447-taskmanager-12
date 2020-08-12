@@ -1,14 +1,16 @@
-import { renderTemplate, generateTasks, generateFilters } from '~/helpers';
-import { createSiteMenuTemplate } from '~/view/site-menu/site-menu';
+import { renderTemplate, generateTasks, generateFilters, renderElement } from '~/helpers';
+import { RenderPosition } from '~/common/enums';
+import SiteMenuView from '~/view/site-menu/site-menu';
 import { createFilterTemplate } from '~/view/filter/filter';
 import { createBoardTemplate } from '~/view/board/board';
 import { createTaskEditTemplate } from '~/view/task-edit/task-edit';
 import { createTaskTemplate } from '~/view/task/task';
 import { createLoadMoreButtonTemplate } from '~/view/load-more-button/load-more-button';
-import { RenderPosition } from './common/enums';
 
 const TASK_COUNT = 22;
 const TASK_COUNT_PER_STEP = 8;
+
+const siteMenuNode = new SiteMenuView().node
 
 const tasks = generateTasks(TASK_COUNT);
 const filters = generateFilters(tasks);
@@ -16,11 +18,7 @@ const filters = generateFilters(tasks);
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
 
-renderTemplate(
-  siteHeaderElement,
-  createSiteMenuTemplate(),
-  RenderPosition.BEFORE_END
-);
+renderElement(siteHeaderElement, siteMenuNode, RenderPosition.BEFORE_END);
 renderTemplate(
   siteMainElement,
   createFilterTemplate(filters),
