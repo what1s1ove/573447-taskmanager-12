@@ -4,10 +4,11 @@ import {
   generateFilters,
   renderElement,
 } from '~/helpers';
-import { RenderPosition } from '~/common/enums';
+import { RenderPosition, SortType } from '~/common/enums';
 import SiteMenuView from '~/view/site-menu/site-menu';
-import { createFilterTemplate } from '~/view/filter/filter';
 import BoardView from '~/view/board/board';
+import SortView from './view/sort/sort';
+import { createFilterTemplate } from '~/view/filter/filter';
 import { createTaskEditTemplate } from '~/view/task-edit/task-edit';
 import { createTaskTemplate } from '~/view/task/task';
 import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
@@ -15,15 +16,17 @@ import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
 const TASK_COUNT = 22;
 const TASK_COUNT_PER_STEP = 8;
 
+const tasks = generateTasks(TASK_COUNT);
+const sorts = Object.values(SortType);
+const filters = generateFilters(tasks);
+
 const siteMenuNode = new SiteMenuView().node;
 const boardNode = new BoardView().node;
+const sortNode = new SortView(sorts).node;
 const loadMoreButtonNode = new LoadMoreButtonView().node;
 
 const siteMainNode = document.querySelector(`.main`);
 const siteHeaderNode = siteMainNode.querySelector(`.main__control`);
-
-const tasks = generateTasks(TASK_COUNT);
-const filters = generateFilters(tasks);
 
 renderElement(siteHeaderNode, siteMenuNode, RenderPosition.BEFORE_END);
 renderTemplate(
@@ -32,6 +35,7 @@ renderTemplate(
   RenderPosition.BEFORE_END
 );
 renderElement(siteMainNode, boardNode, RenderPosition.BEFORE_END);
+renderElement(boardNode, sortNode, RenderPosition.AFTER_BEGIN);
 
 const boardElement = siteMainNode.querySelector(`.board`);
 const taskListElement = boardElement.querySelector(`.board__tasks`);
