@@ -1,7 +1,11 @@
 import { createElement } from '~/helpers/dom/index';
 
 class Board {
-  #element: Element | null = null;
+  #element: Element | null;
+
+  constructor() {
+    this.#element = null;
+  }
 
   get node() {
     if (!this.#element) {
