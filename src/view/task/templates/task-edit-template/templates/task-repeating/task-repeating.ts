@@ -15,13 +15,14 @@ const createTaskEditRepeatingTemplate = (repeating: ITaskRepeating) => {
   ${isRepeating
     ? `<fieldset class="card__repeat-days">
         <div class="card__repeat-days-inner">
-  ${Object.entries(repeating)
-    .map(([day, repeat]) => createTaskEditRepeatingOptionTemplate(day, repeat))
-    .join(``)}
+    ${Object.entries(repeating)
+    .reduce((acc, [day, repeat]) => (acc.concat(
+      createTaskEditRepeatingOptionTemplate(day, repeat)
+    )), ``)}
         </div>
       </fieldset>`
-    : ``
-}`;
+    : ``}
+  `;
 };
 
 export { createTaskEditRepeatingTemplate };

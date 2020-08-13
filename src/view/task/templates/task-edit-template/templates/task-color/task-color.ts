@@ -4,24 +4,23 @@ const createTaskEditColorsTemplate = (currentColor: TaskColor) => {
   const colors = Object.values(TaskColor);
 
   return colors
-    .map(
-      (color) => `
+    .reduce(
+      (acc, it) => (acc.concat(`
         <input
           type="radio"
-          id="color-${color}"
-          class="card__color-input card__color-input--${color} visually-hidden"
+          id="color-${it}"
+          class="card__color-input card__color-input--${it} visually-hidden"
           name="color"
-          value="${color}"
-          ${currentColor === color ? `checked` : ``}
+          value="${it}"
+          ${currentColor === it ? `checked` : ``}
         />
         <label
-          for="color-${color}"
-          class="card__color card__color--${color}"
+          for="color-${it}"
+          class="card__color card__color--${it}"
         >
-        ${color}
-        </label>`
-    )
-    .join(``);
+          ${it}
+        </label>`)), ``
+    );
 };
 
 export { createTaskEditColorsTemplate };
