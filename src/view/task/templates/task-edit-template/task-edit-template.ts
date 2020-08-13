@@ -1,19 +1,15 @@
 import { checkIsTaskExpired, checkIsTaskRepeating } from '~/helpers';
 import { ITask } from '~/common/interfaces';
-import { TaskColor } from '~/common/enums';
-import { TASK_DEFAULT_REPEATING } from '~/common/constants';
 import { createTaskEditDateTemplate } from './templates/task-date/task-date';
 import { createTaskEditRepeatingTemplate } from './templates/task-repeating/task-repeating';
 import { createTaskEditColorsTemplate } from './templates/task-color/task-color';
 
 const createTaskEditTemplate = (task: ITask) => {
   const {
-    color = TaskColor.BLACK,
-    description = ``,
-    dueDate = null,
-    repeating = {
-      ...TASK_DEFAULT_REPEATING,
-    },
+    color,
+    description,
+    dueDate,
+    repeating,
   } = task;
 
   const dateTemplate = createTaskEditDateTemplate(dueDate);

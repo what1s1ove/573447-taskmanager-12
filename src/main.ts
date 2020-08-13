@@ -1,17 +1,11 @@
-import {
-  renderTemplate,
-  generateTasks,
-  generateFilters,
-  renderElement,
-} from '~/helpers';
+import { generateTasks, generateFilters, renderElement } from '~/helpers';
 import { RenderPosition, SortType } from '~/common/enums';
 import SiteMenuView from '~/view/site-menu/site-menu';
 import BoardView from '~/view/board/board';
 import SortView from './view/sort/sort';
 import TaskListView from './view/task-list/task-list';
-import FilterView from "./view/filter/filter";
-import { createTaskEditTemplate } from '~/view/task-edit/task-edit';
-import { createTaskTemplate } from '~/view/task/task';
+import FilterView from './view/filter/filter';
+import TaskView from './view/task/task';
 import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
 
 const TASK_COUNT = 22;
@@ -36,17 +30,12 @@ renderElement(siteMainNode, filterNode, RenderPosition.BEFORE_END);
 renderElement(siteMainNode, boardNode, RenderPosition.BEFORE_END);
 renderElement(boardNode, sortNode, RenderPosition.AFTER_BEGIN);
 renderElement(boardNode, taskListNode, RenderPosition.BEFORE_END);
-
-renderTemplate(
-  taskListNode,
-  createTaskEditTemplate(tasks[0]),
-  RenderPosition.BEFORE_END
-);
+renderElement(taskListNode, new TaskView(null).node, RenderPosition.BEFORE_END);
 
 for (let i = 1; i < Math.min(tasks.length, TASK_COUNT_PER_STEP); i++) {
-  renderTemplate(
+  renderElement(
     taskListNode,
-    createTaskTemplate(tasks[i]),
+    new TaskView(tasks[i]).node,
     RenderPosition.BEFORE_END
   );
 }
@@ -61,12 +50,11 @@ if (tasks.length > TASK_COUNT_PER_STEP) {
   const onShowMoreBtnClick = () => {
     tasks
       .slice(renderedTaskCount, renderedTaskCount + TASK_COUNT_PER_STEP)
-      .map((it) => renderTemplate(
+      .forEach((it) => renderElement(
         taskListNode,
-        createTaskTemplate(it),
+        new TaskView(it).node,
         RenderPosition.BEFORE_END
-      ))
-      .join(``);
+      ));
 
     renderedTaskCount += TASK_COUNT_PER_STEP;
 
