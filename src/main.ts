@@ -30,9 +30,8 @@ renderElement(siteMainNode, filterNode, RenderPosition.BEFORE_END);
 renderElement(siteMainNode, boardNode, RenderPosition.BEFORE_END);
 renderElement(boardNode, sortNode, RenderPosition.AFTER_BEGIN);
 renderElement(boardNode, taskListNode, RenderPosition.BEFORE_END);
-renderElement(taskListNode, new TaskView(null).node, RenderPosition.BEFORE_END);
 
-for (let i = 1; i < Math.min(tasks.length, TASK_COUNT_PER_STEP); i++) {
+for (let i = 0; i < Math.min(tasks.length, TASK_COUNT_PER_STEP); i++) {
   renderElement(
     taskListNode,
     new TaskView(tasks[i]).node,
