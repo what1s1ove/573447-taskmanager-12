@@ -9,7 +9,7 @@ import SiteMenuView from '~/view/site-menu/site-menu';
 import BoardView from '~/view/board/board';
 import SortView from './view/sort/sort';
 import TaskListView from './view/task-list/task-list';
-import { createFilterTemplate } from '~/view/filter/filter';
+import FilterView from "./view/filter/filter";
 import { createTaskEditTemplate } from '~/view/task-edit/task-edit';
 import { createTaskTemplate } from '~/view/task/task';
 import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
@@ -22,6 +22,7 @@ const sorts = Object.values(SortType);
 const filters = generateFilters(tasks);
 
 const siteMenuNode = new SiteMenuView().node;
+const filterNode = new FilterView(filters).node;
 const boardNode = new BoardView().node;
 const sortNode = new SortView(sorts).node;
 const taskListNode = new TaskListView().node;
@@ -31,11 +32,7 @@ const siteMainNode = document.querySelector(`.main`);
 const siteHeaderNode = siteMainNode.querySelector(`.main__control`);
 
 renderElement(siteHeaderNode, siteMenuNode, RenderPosition.BEFORE_END);
-renderTemplate(
-  siteMainNode,
-  createFilterTemplate(filters),
-  RenderPosition.BEFORE_END
-);
+renderElement(siteMainNode, filterNode, RenderPosition.BEFORE_END);
 renderElement(siteMainNode, boardNode, RenderPosition.BEFORE_END);
 renderElement(boardNode, sortNode, RenderPosition.AFTER_BEGIN);
 renderElement(boardNode, taskListNode, RenderPosition.BEFORE_END);
