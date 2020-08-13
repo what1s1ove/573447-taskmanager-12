@@ -26,7 +26,6 @@ class Task {
   }
 
   get template() {
-    // eslint-disable-next-line default-case
     switch (this.#templateMode) {
       case TaskTemplateMode.DEFAULT:
         return createTaskTemplate(this.#task);
