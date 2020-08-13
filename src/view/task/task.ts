@@ -13,7 +13,7 @@ class Task {
 
   constructor(task: ITask | null) {
     this.#task = task ?? EMPTY_TASK;
-    this.#templateMode = task ? TaskTemplateMode.DEFAULT : TaskTemplateMode.EDIT;
+    this.#templateMode = task ? TaskTemplateMode.PREVIEW : TaskTemplateMode.EDIT;
     this.#element = null;
   }
 
@@ -27,7 +27,7 @@ class Task {
 
   get template() {
     switch (this.#templateMode) {
-      case TaskTemplateMode.DEFAULT:
+      case TaskTemplateMode.PREVIEW:
         return createTaskTemplate(this.#task);
       case TaskTemplateMode.EDIT:
         return createTaskEditTemplate(this.#task);

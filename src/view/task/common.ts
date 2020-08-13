@@ -14,7 +14,7 @@ const EMPTY_TASK: ITask = {
 };
 
 enum TaskTemplateMode {
-  DEFAULT = `default`,
+  PREVIEW = `preview`,
   EDIT = `edit`,
 }
 
