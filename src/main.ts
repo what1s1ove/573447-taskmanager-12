@@ -8,6 +8,7 @@ import { RenderPosition, SortType } from '~/common/enums';
 import SiteMenuView from '~/view/site-menu/site-menu';
 import BoardView from '~/view/board/board';
 import SortView from './view/sort/sort';
+import TaskListView from './view/task-list/task-list';
 import { createFilterTemplate } from '~/view/filter/filter';
 import { createTaskEditTemplate } from '~/view/task-edit/task-edit';
 import { createTaskTemplate } from '~/view/task/task';
@@ -23,6 +24,7 @@ const filters = generateFilters(tasks);
 const siteMenuNode = new SiteMenuView().node;
 const boardNode = new BoardView().node;
 const sortNode = new SortView(sorts).node;
+const taskListNode = new TaskListView().node;
 const loadMoreButtonNode = new LoadMoreButtonView().node;
 
 const siteMainNode = document.querySelector(`.main`);
@@ -36,19 +38,17 @@ renderTemplate(
 );
 renderElement(siteMainNode, boardNode, RenderPosition.BEFORE_END);
 renderElement(boardNode, sortNode, RenderPosition.AFTER_BEGIN);
-
-const boardElement = siteMainNode.querySelector(`.board`);
-const taskListElement = boardElement.querySelector(`.board__tasks`);
+renderElement(boardNode, taskListNode, RenderPosition.BEFORE_END);
 
 renderTemplate(
-  taskListElement,
+  taskListNode,
   createTaskEditTemplate(tasks[0]),
   RenderPosition.BEFORE_END
 );
 
 for (let i = 1; i < Math.min(tasks.length, TASK_COUNT_PER_STEP); i++) {
   renderTemplate(
-    taskListElement,
+    taskListNode,
     createTaskTemplate(tasks[i]),
     RenderPosition.BEFORE_END
   );
@@ -57,15 +57,15 @@ for (let i = 1; i < Math.min(tasks.length, TASK_COUNT_PER_STEP); i++) {
 if (tasks.length > TASK_COUNT_PER_STEP) {
   let renderedTaskCount = TASK_COUNT_PER_STEP;
 
-  renderElement(boardElement, loadMoreButtonNode, RenderPosition.BEFORE_END);
+  renderElement(boardNode, loadMoreButtonNode, RenderPosition.BEFORE_END);
 
-  const loadMoreBtn = boardElement.querySelector(`.load-more`);
+  const loadMoreBtn = boardNode.querySelector(`.load-more`);
 
   const onShowMoreBtnClick = () => {
     tasks
       .slice(renderedTaskCount, renderedTaskCount + TASK_COUNT_PER_STEP)
       .map((it) => renderTemplate(
-        taskListElement,
+        taskListNode,
         createTaskTemplate(it),
         RenderPosition.BEFORE_END
       ))
