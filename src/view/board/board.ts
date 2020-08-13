@@ -21,9 +21,9 @@ class Board {
     `;
   }
 
-  removeElement() {
+  public removeElement = () => {
     this.#element = null;
-  }
+  };
 }
 
 export default Board;

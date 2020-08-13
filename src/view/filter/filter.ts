@@ -24,13 +24,13 @@ class Filter {
     return `
   <section class="main__filter filter container">
     ${this.#filters.reduce((acc, it) => (acc.concat(
-      this.getFilterItemTemplate(it, it.name === FilterType.ALL)
+      this.#getFilterItemTemplate(it, it.name === FilterType.ALL)
     )), ``)}
   </section>
     `;
   }
 
-  getFilterItemTemplate(filter: IFilter, isChecked: boolean) {
+  #getFilterItemTemplate = (filter: IFilter, isChecked: boolean) => {
     const { name, count } = filter;
     const isDisabled = count === 0;
 
@@ -50,11 +50,11 @@ class Filter {
         </span>
       </label>
     `;
-  }
+  };
 
-  removeElement() {
+  public removeElement = () => {
     this.#element = null;
-  }
+  };
 }
 
 export default Filter;

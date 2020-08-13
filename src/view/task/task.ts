@@ -36,9 +36,9 @@ class Task {
     return null;
   }
 
-  removeElement() {
+  public removeElement = () => {
     this.#element = null;
-  }
+  };
 }
 
 export default Task;

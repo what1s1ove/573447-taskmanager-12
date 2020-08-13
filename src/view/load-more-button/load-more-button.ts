@@ -23,7 +23,7 @@ class LoadMoreButton {
     `;
   }
 
-  removeElement() {
+  public removeElement() {
     this.#element = null;
   }
 }

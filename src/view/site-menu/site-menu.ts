@@ -48,9 +48,9 @@ class SiteMenu {
     `;
   }
 
-  removeElement() {
+  public removeElement = () => {
     this.#element = null;
-  }
+  };
 }
 
 export default SiteMenu;
