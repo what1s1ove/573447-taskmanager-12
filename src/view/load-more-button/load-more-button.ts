@@ -1,4 +1,4 @@
-import { createElement } from '~/helpers/dom';
+import { createElement } from '~/helpers';
 
 class LoadMoreButton {
   #element: Element | null;

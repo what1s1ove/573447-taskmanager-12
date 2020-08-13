@@ -1,4 +1,4 @@
-import { createElement } from '~/helpers/dom';
+import { createElement } from '~/helpers';
 import { SortType } from '~/common/enums';
 
 class Sort {
