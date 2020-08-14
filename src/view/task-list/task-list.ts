@@ -1,6 +1,6 @@
 import { createElement } from '~/helpers';
 
-class Board {
+class TaskList {
   #element: Element | null;
 
   constructor() {
@@ -17,7 +17,7 @@ class Board {
 
   get template() {
     return `
-      <section class="board container"></section>
+      <div class="board__tasks"></div>
     `;
   }
 
@@ -26,4 +26,4 @@ class Board {
   };
 }
 
-export default Board;
+export default TaskList;

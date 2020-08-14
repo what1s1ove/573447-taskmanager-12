@@ -1,21 +1,60 @@
+import { createElement } from '~/helpers';
 import { IFilter } from '~/common/interfaces';
 import { FilterType } from '~/common/enums';
-import { createFilterItemTemplate } from './templates/filter-item/filter-item';
 
-const createFilterTemplate = (filters: IFilter[]) => {
-  const filterItemsTemplate = filters
-    .map((filter) => {
-      const isDefaultCheck = filter.name === FilterType.ALL;
+class Filter {
+  #element: Element | null;
 
-      return createFilterItemTemplate(filter, isDefaultCheck);
-    })
-    .join(``);
+  #filters: IFilter[];
 
-  return `
-    <section class="main__filter filter container">
-      ${filterItemsTemplate}
-    </section>
-  `;
-};
+  constructor(filters: IFilter[]) {
+    this.#filters = filters;
+    this.#element = null;
+  }
 
-export { createFilterTemplate };
+  get node() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return `
+  <section class="main__filter filter container">
+    ${this.#filters.reduce((acc, it) => (acc.concat(
+      this.#getFilterItemTemplate(it, it.name === FilterType.ALL)
+    )), ``)}
+  </section>
+    `;
+  }
+
+  #getFilterItemTemplate = (filter: IFilter, isChecked: boolean) => {
+    const { name, count } = filter;
+    const isDisabled = count === 0;
+
+    return `
+      <input
+        type="radio"
+        id="filter__${name}"
+        class="filter__input visually-hidden"
+        name="filter"
+        ${isChecked ? `checked` : ``}
+        ${isDisabled ? `disabled` : ``}
+      />
+      <label for="filter__${name}" class="filter__label">
+        ${name}
+        <span class="filter__${name}-count">
+          ${count}
+        </span>
+      </label>
+    `;
+  };
+
+  public removeElement = () => {
+    this.#element = null;
+  };
+}
+
+export default Filter;

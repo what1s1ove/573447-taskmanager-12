@@ -32,4 +32,6 @@ rules:
       exports: never
       functions: never
   import/prefer-default-export: off
+  class-methods-use-this: off
+  default-case: off
 
