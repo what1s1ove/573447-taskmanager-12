@@ -2,7 +2,7 @@ import { createElement } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { BindingCB } from '~/common/types';
 import { createTaskTemplate } from './templates/task-template/task-template';
-import { EMPTY_TASK, TaskTemplateMode } from './common';
+import { TaskTemplateMode } from './common';
 import { createTaskEditTemplate } from './templates/task-edit-template/task-edit-template';
 import { KeyboardKey } from '~/common/enums';
 
