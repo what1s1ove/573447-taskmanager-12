@@ -7,6 +7,7 @@ import TaskListView from './view/task-list/task-list';
 import FilterView from './view/filter/filter';
 import TaskView from './view/task/task';
 import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
+import NoTaskView from '~/view/no-tasks/no-tasks';
 
 const TASK_COUNT = 22;
 const TASK_COUNT_PER_STEP = 8;
@@ -21,6 +22,7 @@ const boardNode = new BoardView().node;
 const sortNode = new SortView(sorts).node;
 const taskListNode = new TaskListView().node;
 const loadMoreButtonNode = new LoadMoreButtonView().node;
+const noTaskNode = new NoTaskView().node;
 
 const siteMainNode = document.querySelector(`.main`);
 const siteHeaderNode = siteMainNode.querySelector(`.main__control`);
