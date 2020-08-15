@@ -1,118 +1,90 @@
-import { createElement } from '~/helpers';
+import AbstractView from '~/view/abstract/abstract';
+import {
+  getFormattedDate,
+  checkIsTaskExpired,
+  checkIsTaskRepeating,
+} from '~/helpers';
 import { ITask } from '~/common/interfaces';
-import { BindingCB } from '~/common/types';
-import { createTaskTemplate } from './templates/task-template/task-template';
-import { TaskTemplateMode } from './common';
-import { createTaskEditTemplate } from './templates/task-edit-template/task-edit-template';
-import { KeyboardKey } from '~/common/enums';
+import { DateFormatType } from '~/common/enums';
 
-class Task {
-  #_element: Element | null;
-
+class Task extends AbstractView {
   #task: ITask;
 
-  #templateMode: TaskTemplateMode;
-
-  #cleanUpListeners: BindingCB | null;
-
-  constructor(task: ITask | null) {
-    this.#task = task ?? EMPTY_TASK;
-    this.#templateMode = task
-      ? TaskTemplateMode.PREVIEW
-      : TaskTemplateMode.EDIT;
-    this.#cleanUpListeners = null;
-    this.#_element = null;
-  }
-
-  get node() {
-    this.element = createElement(this.template);
-
-    return this.#_element;
+  constructor(task: ITask) {
+    super();
+    this.#task = task;
   }
 
   get template() {
-    switch (this.#templateMode) {
-      case TaskTemplateMode.PREVIEW:
-        return createTaskTemplate(this.#task);
-      case TaskTemplateMode.EDIT:
-        return createTaskEditTemplate(this.#task);
-    }
+    const {
+      color,
+      description,
+      dueDate,
+      repeating,
+      isArchive,
+      isFavorite,
+    } = this.#task;
 
-    return null;
+    const date = dueDate
+      ? getFormattedDate(DateFormatType.FULLMONTH_DAY, dueDate)
+      : ``;
+
+    const deadlineClassName = checkIsTaskExpired(dueDate)
+      ? `card--deadline`
+      : ``;
+    const repeatClassName = checkIsTaskRepeating(repeating)
+      ? `card--repeat`
+      : ``;
+    const archiveClassName = isArchive
+      ? `card__btn--archive card__btn--disabled`
+      : `card__btn--archive`;
+
+    const favoriteClassName = isFavorite
+      ? `card__btn--favorites card__btn--disabled`
+      : `card__btn--favorites`;
+
+    return `
+      <article class="card card--${color} ${deadlineClassName} ${repeatClassName}">
+        <div class="card__form">
+          <div class="card__inner">
+            <div class="card__control">
+              <button type="button" class="card__btn card__btn--edit">
+                edit
+              </button>
+              <button type="button" class="card__btn ${archiveClassName}">
+                archive
+              </button>
+              <button
+                type="button"
+                class="card__btn ${favoriteClassName}"
+              >
+                favorites
+              </button>
+            </div>
+            <div class="card__color-bar">
+              <svg class="card__color-bar-wave" width="100%" height="10">
+                <use xlink:href="#wave"></use>
+              </svg>
+            </div>
+            <div class="card__textarea-wrap">
+              <p class="card__text">${description}</p>
+            </div>
+            <div class="card__settings">
+              <div class="card__details">
+                <div class="card__dates">
+                  <div class="card__date-deadline">
+                    <p class="card__input-deadline-wrap">
+                      <span class="card__date">${date}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
   }
-
-  set element(node: Element | null) {
-    if (this.#_element) {
-      this.#_element.replaceWith(node);
-    }
-
-    this.#_element = node;
-
-    this.#initListeners();
-  }
-
-  #initListeners = () => {
-    const onEscKeyDown = (evt: KeyboardEvent) => {
-      if (evt.key === KeyboardKey.ESCAPE) {
-        evt.preventDefault();
-
-        this.#toggleMode(TaskTemplateMode.PREVIEW);
-
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    switch (this.#templateMode) {
-      case TaskTemplateMode.PREVIEW: {
-        const btnEditNode = this.#_element.querySelector(`.card__btn--edit`);
-
-        const onEditClick = () => {
-          this.#toggleMode(TaskTemplateMode.EDIT);
-
-          document.addEventListener(`keydown`, onEscKeyDown);
-        };
-
-        btnEditNode.addEventListener(`click`, onEditClick);
-
-        this.#cleanUpListeners = () => {
-          btnEditNode.removeEventListener(`click`, onEditClick);
-        };
-
-        break;
-      }
-      case TaskTemplateMode.EDIT: {
-        const formEdit = this.#_element.querySelector(`.card__form`);
-
-        const onSubmit = (evt: Event) => {
-          evt.preventDefault();
-
-          this.#toggleMode(TaskTemplateMode.PREVIEW);
-        };
-
-        formEdit.addEventListener(`submit`, onSubmit);
-
-        this.#cleanUpListeners = () => {
-          formEdit.removeEventListener(`submit`, onSubmit);
-
-          document.removeEventListener(`keydown`, onEscKeyDown);
-        };
-
-        break;
-      }
-    }
-  };
-
-  #toggleMode = (mode: TaskTemplateMode) => {
-    this.#templateMode = mode;
-
-    this.#cleanUpListeners();
-
-    this.element = createElement(this.template);
-  };
-
-  public removeElement = () => {
-    this.element = null;
-  };
 }
 
 export default Task;

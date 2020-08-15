@@ -4,13 +4,14 @@ import { createTaskEditDateTemplate } from './templates/task-date/task-date';
 import { createTaskEditRepeatingTemplate } from './templates/task-repeating/task-repeating';
 import { createTaskEditColorsTemplate } from './templates/task-color/task-color';
 import { ITask } from '~/common/interfaces';
+import { EMPTY_TASK } from '../task-list/common';
 
 class EditTask extends AbstractView {
   #task: ITask | null;
 
   constructor(task: ITask | null) {
     super();
-    this.#task = task;
+    this.#task = task ?? EMPTY_TASK;
   }
 
   get template() {
