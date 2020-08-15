@@ -6,6 +6,8 @@ type CallBacks = {
 };
 
 class LoadMoreButton extends AbstractView {
+  callbacks: CallBacks;
+
   get template() {
     return `
       <button class="load-more" type="button">
@@ -17,11 +19,11 @@ class LoadMoreButton extends AbstractView {
   #onClick = (evt: Event) => {
     evt.preventDefault();
 
-    (this.callbacks as CallBacks).onClick();
+    this.callbacks.onClick();
   };
 
   public setOnClick = (callback: BindingCb) => {
-    (this.callbacks as CallBacks).onClick = callback;
+    this.callbacks.onClick = callback;
 
     this.element.addEventListener(`click`, this.#onClick);
   };
