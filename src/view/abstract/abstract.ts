@@ -3,26 +3,26 @@ import { createElement } from '~/helpers';
 abstract class Abstract {
   abstract get template(): string;
 
-  #element: Element | null;
+  protected element: Element | null;
 
   constructor() {
     if (new.target === Abstract) {
       throw new Error(`Can't instantiate Abstract, only concrete one.`);
     }
 
-    this.#element = null;
+    this.element = null;
   }
 
   get node() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
+    if (!this.element) {
+      this.element = createElement(this.template);
     }
 
-    return this.#element;
+    return this.element;
   }
 
   public removeElement() {
-    this.#element = null;
+    this.element = null;
   }
 }
 
