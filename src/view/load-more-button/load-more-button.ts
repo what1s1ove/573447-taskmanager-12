@@ -1,4 +1,9 @@
 import AbstractView from '~/view/abstract/abstract';
+import { BindingCb } from '~/common/types';
+
+type CallBacks = {
+  onClick: BindingCb;
+};
 
 class LoadMoreButton extends AbstractView {
   get template() {
@@ -8,6 +13,18 @@ class LoadMoreButton extends AbstractView {
       </button>
     `;
   }
+
+  #onClick = (evt: Event) => {
+    evt.preventDefault();
+
+    (this.callbacks as CallBacks).onClick();
+  };
+
+  public setOnClick = (callback: BindingCb) => {
+    (this.callbacks as CallBacks).onClick = callback;
+
+    this.element.addEventListener(`click`, this.#onClick);
+  };
 }
 
 export default LoadMoreButton;

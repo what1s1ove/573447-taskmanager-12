@@ -58,12 +58,10 @@ const renderBoard = (boardContainer: Element, boardTasks: ITask[]) => {
     let renderedTaskCount = TASK_COUNT_PER_STEP;
 
     const loadMoreButtonComponent = new LoadMoreButtonView();
-    const loadMoreButtonNode = loadMoreButtonComponent.node;
 
-    renderElement(boardNode, loadMoreButtonNode, RenderPosition.BEFORE_END);
+    renderElement(boardNode, loadMoreButtonComponent.node, RenderPosition.BEFORE_END);
 
-    loadMoreButtonNode.addEventListener(`click`, (evt) => {
-      evt.preventDefault();
+    loadMoreButtonComponent.setOnClick(() => {
       boardTasks
         .slice(renderedTaskCount, renderedTaskCount + TASK_COUNT_PER_STEP)
         .forEach((it) => renderElement(
@@ -75,7 +73,7 @@ const renderBoard = (boardContainer: Element, boardTasks: ITask[]) => {
       renderedTaskCount += TASK_COUNT_PER_STEP;
 
       if (renderedTaskCount >= boardTasks.length) {
-        loadMoreButtonNode.remove();
+        loadMoreButtonComponent.node.remove();
         loadMoreButtonComponent.removeElement();
       }
     });

@@ -1,9 +1,14 @@
 import { createElement } from '~/helpers';
+import { BindingCb, BindingCbWithOne } from '~/common/types';
+
+type CallBacks = Record<string, BindingCb | BindingCbWithOne<any>>;
 
 abstract class Abstract {
   abstract get template(): string;
 
   protected element: Element | null;
+
+  protected callbacks: CallBacks;
 
   constructor() {
     if (new.target === Abstract) {
@@ -11,6 +16,8 @@ abstract class Abstract {
     }
 
     this.element = null;
+
+    this.callbacks = {};
   }
 
   get node() {

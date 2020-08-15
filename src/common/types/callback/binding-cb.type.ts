@@ -1,3 +1,4 @@
-type BindingCB = () => void;
+type BindingCb = () => void;
+type BindingCbWithOne<T> = (arg: T) => void;
 
-export { BindingCB };
+export { BindingCb, BindingCbWithOne };
