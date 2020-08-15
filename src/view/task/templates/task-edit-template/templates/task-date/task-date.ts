@@ -6,12 +6,12 @@ const createTaskEditDateTemplate = (dueDate: TaskDueDate) => {
   const hasDate = Boolean(dueDate);
 
   return `
-  <button class="card__date-deadline-toggle" type="button">
-    date:
-    <span class="card__date-status">
-      ${hasDate ? `yes` : `no`}
-    </span>
-  </button>
+    <button class="card__date-deadline-toggle" type="button">
+      date:
+      <span class="card__date-status">
+        ${hasDate ? `yes` : `no`}
+      </span>
+    </button>
     ${hasDate
     ? `<fieldset class="card__date-deadline">
         <label class="card__input-deadline-wrap">

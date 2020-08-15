@@ -1,5 +1,6 @@
 import { createElement } from '~/helpers';
 import { ITask } from '~/common/interfaces';
+import { BindingCB } from '~/common/types';
 import { createTaskTemplate } from './templates/task-template/task-template';
 import { EMPTY_TASK, TaskTemplateMode } from './common';
 import { createTaskEditTemplate } from './templates/task-edit-template/task-edit-template';
@@ -11,7 +12,7 @@ class Task {
 
   #templateMode: TaskTemplateMode;
 
-  #cleanUpListeners: () => void | null;
+  #cleanUpListeners: BindingCB | null;
 
   constructor(task: ITask | null) {
     this.#task = task ?? EMPTY_TASK;
