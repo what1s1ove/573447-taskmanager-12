@@ -4,6 +4,7 @@ import { BindingCB } from '~/common/types';
 import { createTaskTemplate } from './templates/task-template/task-template';
 import { EMPTY_TASK, TaskTemplateMode } from './common';
 import { createTaskEditTemplate } from './templates/task-edit-template/task-edit-template';
+import { KeyboardKey } from '~/common/enums';
 
 class Task {
   #_element: Element | null;
@@ -51,12 +52,24 @@ class Task {
   }
 
   #initListeners = () => {
+    const onEscKeyDown = (evt: KeyboardEvent) => {
+      if (evt.key === KeyboardKey.ESCAPE) {
+        evt.preventDefault();
+
+        this.#toggleMode(TaskTemplateMode.PREVIEW);
+
+        document.removeEventListener(`keydown`, onEscKeyDown);
+      }
+    };
+
     switch (this.#templateMode) {
       case TaskTemplateMode.PREVIEW: {
         const btnEditNode = this.#_element.querySelector(`.card__btn--edit`);
 
         const onEditClick = () => {
           this.#toggleMode(TaskTemplateMode.EDIT);
+
+          document.addEventListener(`keydown`, onEscKeyDown);
         };
 
         btnEditNode.addEventListener(`click`, onEditClick);
@@ -80,6 +93,8 @@ class Task {
 
         this.#cleanUpListeners = () => {
           formEdit.removeEventListener(`submit`, onSubmit);
+
+          document.removeEventListener(`keydown`, onEscKeyDown);
         };
 
         break;
