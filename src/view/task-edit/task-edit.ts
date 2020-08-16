@@ -4,9 +4,16 @@ import { createTaskEditDateTemplate } from './templates/task-date/task-date';
 import { createTaskEditRepeatingTemplate } from './templates/task-repeating/task-repeating';
 import { createTaskEditColorsTemplate } from './templates/task-color/task-color';
 import { ITask } from '~/common/interfaces';
+import { BindingCb } from '~/common/types';
 import { EMPTY_TASK } from '../task-list/common';
 
+type CallBacks = {
+  onSubmit: BindingCb;
+}
+
 class EditTask extends AbstractView {
+  protected callbacks: CallBacks;
+
   #task: ITask | null;
 
   constructor(task: ITask | null) {
@@ -74,6 +81,20 @@ class EditTask extends AbstractView {
         </form>
       </article>
     `;
+  }
+
+  #onSubmit = (evt: Event) => {
+    evt.preventDefault();
+
+    this.callbacks.onSubmit();
+  }
+
+  setOnSubmit(callback: BindingCb) {
+    this.callbacks.onSubmit = callback;
+
+    const formNode = this.node.querySelector(`.card__form`);
+
+    formNode.addEventListener(`submit`, this.#onSubmit);
   }
 }
 

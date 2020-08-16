@@ -6,7 +6,7 @@ type CallBacks = {
 };
 
 class LoadMoreButton extends AbstractView {
-  callbacks: CallBacks;
+  protected callbacks: CallBacks;
 
   get template() {
     return `

@@ -5,9 +5,16 @@ import {
   checkIsTaskRepeating,
 } from '~/helpers';
 import { ITask } from '~/common/interfaces';
+import { BindingCb } from '~/common/types';
 import { DateFormatType } from '~/common/enums';
 
+type CallBacks = {
+  onEditClick: BindingCb;
+}
+
 class Task extends AbstractView {
+  protected callbacks: CallBacks;
+
   #task: ITask;
 
   constructor(task: ITask) {
@@ -84,6 +91,20 @@ class Task extends AbstractView {
         </div>
       </article>
     `;
+  }
+
+  #onEditClick = (evt: Event) => {
+    evt.preventDefault();
+
+    this.callbacks.onEditClick();
+  }
+
+  setOnEditClick(callback: BindingCb) {
+    this.callbacks.onEditClick = callback;
+
+    const editBtnNode = this.node.querySelector(`.card__btn--edit`);
+
+    editBtnNode.addEventListener(`click`, this.#onEditClick);
   }
 }
 

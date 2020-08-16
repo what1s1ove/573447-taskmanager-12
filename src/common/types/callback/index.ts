@@ -1,2 +1,2 @@
 export * from './binding-cb.type';
-export * from './unknown-cb.type';
+export * from './any-cb.type';

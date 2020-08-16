@@ -1,12 +1,12 @@
 import { createElement } from '~/helpers';
-import { UnknownCb } from '~/common/types';
+import { AnyCb } from '~/common/types';
 
 abstract class Abstract {
   abstract get template(): string;
 
   protected element: Element | null;
 
-  protected callbacks: Record<string, UnknownCb>;
+  protected callbacks: Record<string, AnyCb>;
 
   constructor() {
     if (new.target === Abstract) {
