@@ -15,6 +15,10 @@ const TASK_COUNT_PER_STEP = 8;
 const sorts = Object.values(SortType);
 
 class Board {
+  #boardTasks: ITask[];
+
+  #renderedTaskCount: number;
+
   #boardContainerNode: Element;
 
   #noTasksComponent: NoTaskView;
@@ -25,15 +29,17 @@ class Board {
 
   #taskListComponent: TaskListView;
 
-  #boardTasks: ITask[];
+  #loadMoreButtonComponent: LoadMoreButtonView;
 
   constructor(boardContainerNode: Element) {
     this.#boardContainerNode = boardContainerNode;
+    this.#renderedTaskCount = TASK_COUNT_PER_STEP;
 
     this.#noTasksComponent = new NoTaskView();
     this.#boardComponent = new BoardView();
     this.#sortComponent = new SortView(sorts);
     this.#taskListComponent = new TaskListView();
+    this.#loadMoreButtonComponent = new LoadMoreButtonView();
   }
 
   #renderNoTask = () => {
@@ -99,23 +105,9 @@ class Board {
   }
 
   #renderLoadMoreButton = () => {
-    let renderedTaskCount = TASK_COUNT_PER_STEP;
+    renderElement(this.#boardComponent, this.#loadMoreButtonComponent, RenderPosition.BEFORE_END);
 
-    const loadMoreButtonComponent = new LoadMoreButtonView();
-
-    renderElement(this.#boardComponent, loadMoreButtonComponent, RenderPosition.BEFORE_END);
-
-    loadMoreButtonComponent.setOnClick(() => {
-      this.#boardTasks
-        .slice(renderedTaskCount, renderedTaskCount + TASK_COUNT_PER_STEP)
-        .forEach((boardTask) => this.#renderTask(boardTask));
-
-      renderedTaskCount += TASK_COUNT_PER_STEP;
-
-      if (renderedTaskCount >= this.#boardTasks.length) {
-        removeElement(loadMoreButtonComponent);
-      }
-    });
+    this.#loadMoreButtonComponent.setOnClick(this.#onLoadMoreBtnClick);
   };
 
   #renderBoard = () => {
@@ -132,6 +124,16 @@ class Board {
     this.#renderSorts();
     this.#renderTaskList();
   };
+
+  #onLoadMoreBtnClick = () => {
+    this.#renderTasks(this.#renderedTaskCount, this.#renderedTaskCount + TASK_COUNT_PER_STEP);
+
+    this.#renderedTaskCount += TASK_COUNT_PER_STEP;
+
+    if (this.#renderedTaskCount >= this.#boardTasks.length) {
+      removeElement(this.#loadMoreButtonComponent);
+    }
+  }
 
   public init(tasks: ITask[]) {
     this.#boardTasks = tasks.slice();
