@@ -9,7 +9,7 @@ import { EMPTY_TASK } from '../task-list/common';
 
 type CallBacks = {
   onSubmit: BindingCb;
-}
+};
 
 class EditTask extends AbstractView {
   protected callbacks: CallBacks;
@@ -82,7 +82,7 @@ class EditTask extends AbstractView {
     evt.preventDefault();
 
     this.callbacks.onSubmit();
-  }
+  };
 
   setOnSubmit(callback: BindingCb) {
     this.callbacks.onSubmit = callback;

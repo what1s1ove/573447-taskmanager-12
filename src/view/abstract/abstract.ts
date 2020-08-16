@@ -1,4 +1,4 @@
-import { createElement } from '~/helpers';
+import { createElement } from '~/helpers/render/create-element/create-element.helper';
 import { AnyCb } from '~/common/types';
 
 abstract class Abstract {

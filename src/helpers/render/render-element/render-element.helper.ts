@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import Abstract from '~/view/abstract/abstract';
 import { RenderPosition } from '~/common/enums';
 

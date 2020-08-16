@@ -10,7 +10,7 @@ import { DateFormatType } from '~/common/enums';
 
 type CallBacks = {
   onEditClick: BindingCb;
-}
+};
 
 class Task extends AbstractView {
   protected callbacks: CallBacks;
@@ -97,7 +97,7 @@ class Task extends AbstractView {
     evt.preventDefault();
 
     this.callbacks.onEditClick();
-  }
+  };
 
   setOnEditClick(callback: BindingCb) {
     this.callbacks.onEditClick = callback;
