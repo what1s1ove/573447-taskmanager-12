@@ -1,19 +1,12 @@
-import { createElement } from '~/helpers';
+import AbstractView from '~/view/abstract/abstract';
+import { BindingCb } from '~/common/types';
 
-class LoadMoreButton {
-  #element: Element | null;
+type CallBacks = {
+  onClick: BindingCb;
+};
 
-  constructor() {
-    this.#element = null;
-  }
-
-  get node() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
+class LoadMoreButton extends AbstractView {
+  protected callbacks: CallBacks;
 
   get template() {
     return `
@@ -23,9 +16,17 @@ class LoadMoreButton {
     `;
   }
 
-  public removeElement() {
-    this.#element = null;
-  }
+  #onClick = (evt: Event) => {
+    evt.preventDefault();
+
+    this.callbacks.onClick();
+  };
+
+  public setOnClick = (callback: BindingCb) => {
+    this.callbacks.onClick = callback;
+
+    this.element.addEventListener(`click`, this.#onClick);
+  };
 }
 
 export default LoadMoreButton;

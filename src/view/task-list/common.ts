@@ -13,9 +13,4 @@ const EMPTY_TASK: ITask = {
   isFavorite: false,
 };
 
-enum TaskTemplateMode {
-  PREVIEW = `preview`,
-  EDIT = `edit`,
-}
-
-export { EMPTY_TASK, TaskTemplateMode };
+export { EMPTY_TASK };
