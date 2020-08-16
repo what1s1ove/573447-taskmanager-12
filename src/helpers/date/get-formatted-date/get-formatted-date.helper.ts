@@ -2,15 +2,17 @@ import { DateFormatType } from '~/common/enums';
 
 const getFormattedDate = (type: DateFormatType, date: Date | string) => {
   const localDate = new Date(date);
+  let formattedDate = null;
 
-  const formatter = {
-    [DateFormatType.FULLMONTH_DAY]: localDate.toLocaleString(`en-US`, {
-      day: `numeric`,
-      month: `long`,
-    }),
-  };
+  switch (type) {
+    case DateFormatType.FULLMONTH_DAY:
+      formattedDate = localDate.toLocaleString(`en-US`, {
+        day: `numeric`,
+        month: `long`,
+      });
+  }
 
-  return formatter[type];
+  return formattedDate;
 };
 
 export { getFormattedDate };
