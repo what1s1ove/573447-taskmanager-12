@@ -1,17 +1,11 @@
-import {
-  renderElement,
-  replaceWithElement,
-  removeElement,
-  getRankByType,
-} from '~/helpers';
+import { renderElement, removeElement, getRankByType } from '~/helpers';
 import { ITask } from '~/common/interfaces';
-import { RenderPosition, KeyboardKey, SortType } from '~/common/enums';
+import { RenderPosition, SortType } from '~/common/enums';
+import TaskPresenter from '~/presenter/task/task';
 import NoTaskView from '~/view/no-tasks/no-tasks';
 import BoardView from '~/view/board/board';
 import SortView from '~/view/sort/sort';
 import TaskListView from '~/view/task-list/task-list';
-import TaskView from '~/view/task/task';
-import TaskEditView from '~/view/task-edit/task-edit';
 import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
 
 const START_TASK_RENDER_COUNT = 0;
@@ -67,36 +61,7 @@ class Board {
   };
 
   #renderTask = (task: ITask) => {
-    const taskComponent = new TaskView(task);
-    const taskEditComponent = new TaskEditView(task);
-
-    const replaceCardToForm = () => replaceWithElement(taskComponent, taskEditComponent);
-
-    const replaceFormToCard = () => replaceWithElement(taskEditComponent, taskComponent);
-
-    const onEscKeyDown = (evt: KeyboardEvent) => {
-      if (evt.key === KeyboardKey.ESCAPE) {
-        evt.preventDefault();
-
-        replaceFormToCard();
-
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    taskComponent.setOnEditClick(() => {
-      replaceCardToForm();
-
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
-
-    taskEditComponent.setOnSubmit(() => {
-      replaceFormToCard();
-
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    });
-
-    renderElement(this.#taskListComponent, taskComponent, RenderPosition.BEFORE_END);
+    new TaskPresenter(this.#taskListComponent).init(task);
   };
 
   #renderTasks = (from: number, to: number) => {
