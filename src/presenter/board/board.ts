@@ -1,4 +1,4 @@
-import { renderElement, removeElement, getRankByType } from '~/helpers';
+import { renderElement, removeElement, getRankByType, updateItem } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { RenderPosition, SortType } from '~/common/enums';
 import TaskPresenter from '~/presenter/task/task';
@@ -70,6 +70,12 @@ class Board {
 
     this.#taskPresenters[task.id] = taskPresenter;
   };
+
+  #changeTask = (task: ITask) => {
+    this.#boardTasks = updateItem(this.#boardTasks, task, 'id');
+    this.#initialTasks = updateItem(this.#initialTasks, task, 'id');
+    this.#taskPresenters[task.id].init(task);
+  }
 
   #renderTasks = (from: number, to: number) => {
     this.#boardTasks.slice(from, to).forEach((it) => this.#renderTask(it));
