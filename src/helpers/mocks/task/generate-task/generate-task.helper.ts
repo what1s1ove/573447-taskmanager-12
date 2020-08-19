@@ -5,6 +5,7 @@ import { generateDate } from '../generate-date/generate-date.helper';
 import { generateRepeating } from '../generate-repeating/generate-repeating.helper';
 import { getRandomColor } from '../get-random-color/get-random-color.helper';
 import { generateDescription } from '../generate-description/generate-description.helper';
+import { getRandomId } from '~/helpers/id';
 
 const generateTask = (): ITask => {
   const dueDate = generateDate();
@@ -13,6 +14,7 @@ const generateTask = (): ITask => {
   return {
     dueDate,
     repeating,
+    id: getRandomId(),
     description: generateDescription(),
     color: getRandomColor(),
     isArchive: Boolean(getRandomNumber(0, 1)),

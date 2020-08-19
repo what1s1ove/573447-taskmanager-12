@@ -3,6 +3,7 @@ import { TaskDueDate } from '~/common/types';
 import { ITaskRepeating } from './task-repeating.interface';
 
 interface ITask {
+  id: number;
   description: string;
   dueDate: TaskDueDate;
   repeating: ITaskRepeating;
