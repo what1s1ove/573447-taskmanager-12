@@ -22,6 +22,8 @@ class Board {
 
   #currentSortType: SortType;
 
+  #taskPresenters: Record<number, TaskPresenter>
+
   #boardContainerNode: Element;
 
   #noTasksComponent: NoTaskView;
@@ -38,6 +40,7 @@ class Board {
     this.#boardContainerNode = boardContainerNode;
     this.#renderedTaskCount = TASK_COUNT_PER_STEP;
     this.#currentSortType = SortType.DEFAULT;
+    this.#taskPresenters = {};
 
     this.#noTasksComponent = new NoTaskView();
     this.#boardComponent = new BoardView();
@@ -61,7 +64,11 @@ class Board {
   };
 
   #renderTask = (task: ITask) => {
-    new TaskPresenter(this.#taskListComponent).init(task);
+    const taskPresenter = new TaskPresenter(this.#taskListComponent);
+
+    taskPresenter.init(task)
+
+    this.#taskPresenters[task.id] = taskPresenter;
   };
 
   #renderTasks = (from: number, to: number) => {
@@ -69,7 +76,8 @@ class Board {
   };
 
   #clearTaskList = () => {
-    this.#taskListComponent.node.innerHTML = ``;
+    Object.values(this.#taskPresenters).forEach((it) => it.destroy());
+
     this.#renderedTaskCount = TASK_COUNT_PER_STEP;
   };
 
