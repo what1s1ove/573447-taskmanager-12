@@ -1,4 +1,4 @@
-import { replaceWithElement, renderElement } from '~/helpers';
+import { replaceWithElement, renderElement, removeElement } from '~/helpers';
 import { KeyboardKey, RenderPosition } from '~/common/enums';
 import Abstract from '~/view/abstract/abstract';
 import TaskView from '~/view/task/task';
@@ -29,18 +29,46 @@ class Task {
   public init(task: ITask) {
     this.#task = task;
 
+    const prevTaskComponent = this.#taskComponent;
+    const prevTaskEditComponent = this.#taskEditComponent;
+
     this.#taskComponent = new TaskView(task);
     this.#taskEditComponent = new TaskEditView(task);
 
+    this.#initListeners();
+
+    if (!prevTaskComponent || !prevTaskEditComponent) {
+      renderElement(
+        this.#taskListNode,
+        this.#taskComponent,
+        RenderPosition.BEFORE_END
+      );
+
+      return;
+    }
+
+    switch (this.#taskMode) {
+      case TaskMode.PREVIEW:
+        replaceWithElement(this.#taskComponent, prevTaskComponent);
+        break;
+      case TaskMode.EDIT:
+        replaceWithElement(this.#taskEditComponent, prevTaskEditComponent);
+        break;
+    }
+
+    removeElement(prevTaskComponent);
+    removeElement(prevTaskEditComponent);
+  }
+
+  public destroy() {
+    removeElement(this.#taskComponent);
+    removeElement(this.#taskEditComponent);
+  }
+
+  #initListeners = () => {
     this.#taskComponent.setOnEditClick(this.#onEditClick);
     this.#taskEditComponent.setOnSubmit(this.#onSubmit);
-
-    renderElement(
-      this.#taskListNode,
-      this.#taskComponent,
-      RenderPosition.BEFORE_END
-    );
-  }
+  };
 
   #replaceCardToForm = () => {
     replaceWithElement(this.#taskComponent, this.#taskEditComponent);
