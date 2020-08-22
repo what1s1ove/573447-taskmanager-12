@@ -48,11 +48,11 @@ class TaskEdit extends AbstractView {
       dueDate,
       repeating,
       isDueDate,
-      isRepeating
+      isRepeating,
     } = this.#task;
 
     const dateTemplate = createTaskEditDateTemplate(dueDate, isDueDate);
-    const repeatingTemplate = createTaskEditRepeatingTemplate(repeating, isRepeating);
+    const repeatingTemplate = createTaskEditRepeatingTemplate(repeating,isRepeating);
     const colorsTemplate = createTaskEditColorsTemplate(color);
 
     const deadlineClassName = checkIsTaskExpired(dueDate)
@@ -99,23 +99,28 @@ class TaskEdit extends AbstractView {
   }
 
   #initListeners = () => {
+    const descInputNode = this.node.querySelector(`.card__text`);
     const dueDateBtnNode = this.node.querySelector(`.card__date-deadline-toggle`);
     const repeatingBtnNode = this.node.querySelector(`.card__repeat-toggle`);
 
     dueDateBtnNode.addEventListener(`click`, this.#onDueDateToggle);
     repeatingBtnNode.addEventListener(`click`, this.#onRepeatingToggle);
+    descInputNode.addEventListener(`input`, this.#onDescInput);
     this.setOnSubmit(this.callbacks.onSubmit);
   };
 
-
-  #updateDate = (taskPayload: Partial<ITask>) => {
+  #updateTask = (taskPayload: Partial<ITask>, isDataUpdating = false) => {
     this.#task = {
       ...this.#task,
       ...taskPayload,
     };
 
+    if (isDataUpdating) {
+      return;
+    }
+
     this.#updateNode();
-  }
+  };
 
   #updateNode = () => {
     let prevElement = this.node;
@@ -127,16 +132,25 @@ class TaskEdit extends AbstractView {
     prevElement = null;
 
     this.#initListeners();
-  }
+  };
+
+  #onDescInput = ({ target }: Event) => {
+    this.#updateTask(
+      {
+        description: (target as HTMLInputElement).value,
+      },
+      true
+    );
+  };
 
   #onDueDateToggle = () => {
-    this.#updateDate({
+    this.#updateTask({
       isDueDate: !this.#task.isDueDate,
     });
   };
 
   #onRepeatingToggle = () => {
-    this.#updateDate({
+    this.#updateTask({
       isRepeating: !this.#task.isRepeating,
     });
   };
