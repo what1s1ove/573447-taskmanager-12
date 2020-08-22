@@ -64,7 +64,7 @@ class Board {
   };
 
   #renderTask = (task: ITask) => {
-    const taskPresenter = new TaskPresenter(this.#taskListComponent);
+    const taskPresenter = new TaskPresenter(this.#taskListComponent, this.#changeTask);
 
     taskPresenter.init(task)
 

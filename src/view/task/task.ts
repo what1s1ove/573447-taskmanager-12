@@ -10,6 +10,8 @@ import { DateFormatType } from '~/common/enums';
 
 type CallBacks = {
   onEditClick: BindingCb;
+  onFavoriteClick: BindingCb;
+  onArchiveClick: BindingCb;
 };
 
 class Task extends AbstractView {
@@ -93,18 +95,40 @@ class Task extends AbstractView {
     `;
   }
 
-  #onEditClick = (evt: Event) => {
-    evt.preventDefault();
-
+  #onEditClick = () => {
     this.callbacks.onEditClick();
   };
 
-  setOnEditClick(callback: BindingCb) {
+  #onFavoriteClick = () => {
+    this.callbacks.onFavoriteClick();
+  };
+
+  #onArchiveClick = () => {
+    this.callbacks.onArchiveClick();
+  };
+
+  public setOnEditClick(callback: BindingCb) {
     this.callbacks.onEditClick = callback;
 
     const editBtnNode = this.node.querySelector(`.card__btn--edit`);
 
     editBtnNode.addEventListener(`click`, this.#onEditClick);
+  }
+
+  public setOnFavoriteClick(callback: BindingCb) {
+    this.callbacks.onFavoriteClick = callback;
+
+    const favoriteBtnNode = this.node.querySelector(`.card__btn--favorites`);
+
+    favoriteBtnNode.addEventListener(`click`, this.#onFavoriteClick);
+  }
+
+  public setOnArchiveClick(callback: BindingCb) {
+    this.callbacks.onArchiveClick = callback;
+
+    const archiveBtnNode = this.node.querySelector(`.card__btn--archive`);
+
+    archiveBtnNode.addEventListener(`click`, this.#onArchiveClick);
   }
 }
 

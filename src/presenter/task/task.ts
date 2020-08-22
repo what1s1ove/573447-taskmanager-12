@@ -4,21 +4,24 @@ import Abstract from '~/view/abstract/abstract';
 import TaskView from '~/view/task/task';
 import TaskEditView from '~/view/task-edit/task-edit';
 import { ITask } from '~/common/interfaces';
-import { TaskMode } from './common';
+import { TaskMode, ChangeTaskCb } from './common';
 
 class Task {
+  #taskListComponent: Abstract;
+
+  #changeTask: ChangeTaskCb;
+
   #task: ITask;
 
   #taskMode: TaskMode;
-
-  #taskListNode: Element | Abstract;
 
   #taskComponent: TaskView | null;
 
   #taskEditComponent: TaskEditView | null;
 
-  constructor(taskListNode: Element | Abstract) {
-    this.#taskListNode = taskListNode;
+  constructor(taskListNode: Abstract, changeTask: ChangeTaskCb) {
+    this.#taskListComponent = taskListNode;
+    this.#changeTask = changeTask;
 
     this.#taskMode = TaskMode.PREVIEW;
 
@@ -39,7 +42,7 @@ class Task {
 
     if (!prevTaskComponent || !prevTaskEditComponent) {
       renderElement(
-        this.#taskListNode,
+        this.#taskListComponent,
         this.#taskComponent,
         RenderPosition.BEFORE_END
       );
@@ -49,10 +52,10 @@ class Task {
 
     switch (this.#taskMode) {
       case TaskMode.PREVIEW:
-        replaceWithElement(this.#taskComponent, prevTaskComponent);
+        replaceWithElement(prevTaskComponent, this.#taskComponent);
         break;
       case TaskMode.EDIT:
-        replaceWithElement(this.#taskEditComponent, prevTaskEditComponent);
+        replaceWithElement(prevTaskEditComponent, this.#taskEditComponent);
         break;
     }
 
@@ -67,6 +70,8 @@ class Task {
 
   #initListeners = () => {
     this.#taskComponent.setOnEditClick(this.#onEditClick);
+    this.#taskComponent.setOnFavoriteClick(this.#onFavoriteClick);
+    this.#taskComponent.setOnArchiveClick(this.#onArchiveClick);
     this.#taskEditComponent.setOnSubmit(this.#onSubmit);
   };
 
@@ -96,7 +101,22 @@ class Task {
     this.#replaceCardToForm();
   };
 
-  #onSubmit = () => {
+  #onFavoriteClick = () => {
+    this.#changeTask({
+      ...this.#task,
+      isFavorite: !this.#task.isFavorite,
+    });
+  };
+
+  #onArchiveClick = () => {
+    this.#changeTask({
+      ...this.#task,
+      isArchive: !this.#task.isArchive,
+    });
+  };
+
+  #onSubmit = (task: ITask) => {
+    this.#changeTask(task);
     this.#replaceFormToCard();
   };
 }

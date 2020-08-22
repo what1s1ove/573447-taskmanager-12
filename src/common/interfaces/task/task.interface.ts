@@ -10,6 +10,8 @@ interface ITask {
   color: TaskColor;
   isArchive: boolean;
   isFavorite: boolean;
+  isDueDate?: boolean;
+  isRepeating?: boolean;
 }
 
 export { ITask };

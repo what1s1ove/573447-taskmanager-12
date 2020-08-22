@@ -1,24 +1,44 @@
 import AbstractView from '~/view/abstract/abstract';
-import { checkIsTaskExpired, checkIsTaskRepeating } from '~/helpers';
+import { checkIsTaskExpired, replaceWithElement } from '~/helpers';
+import { ITask } from '~/common/interfaces';
+import { BindingCb, BindingCbWithOne } from '~/common/types';
+import { TASK_DEFAULT_REPEATING } from '~/common/constants';
 import { createTaskEditDateTemplate } from './templates/task-date/task-date';
 import { createTaskEditRepeatingTemplate } from './templates/task-repeating/task-repeating';
 import { createTaskEditColorsTemplate } from './templates/task-color/task-color';
-import { ITask } from '~/common/interfaces';
-import { BindingCb } from '~/common/types';
 import { EMPTY_TASK } from '../task-list/common';
 
 type CallBacks = {
-  onSubmit: BindingCb;
+  onSubmit: BindingCbWithOne<ITask>;
 };
 
-class EditTask extends AbstractView {
+class TaskEdit extends AbstractView {
   protected callbacks: CallBacks;
 
   #task: ITask | null;
 
+  static parseTask(task: ITask) {
+    const copiedTask = { ...task };
+
+    if (copiedTask.isDueDate) {
+      copiedTask.dueDate = null;
+    }
+
+    if (copiedTask.isRepeating) {
+      copiedTask.repeating = TASK_DEFAULT_REPEATING;
+    }
+
+    delete copiedTask.isDueDate;
+    delete copiedTask.isRepeating;
+
+    return copiedTask;
+  }
+
   constructor(task: ITask | null) {
     super();
-    this.#task = task ?? EMPTY_TASK;
+    this.#task = TaskEdit.parseTask(task ?? EMPTY_TASK);
+
+    this.#initListeners();
   }
 
   get template() {
@@ -26,19 +46,19 @@ class EditTask extends AbstractView {
       color,
       description,
       dueDate,
-      repeating
+      repeating,
+      isDueDate,
+      isRepeating
     } = this.#task;
 
-    const dateTemplate = createTaskEditDateTemplate(dueDate);
-    const repeatingTemplate = createTaskEditRepeatingTemplate(repeating);
+    const dateTemplate = createTaskEditDateTemplate(dueDate, isDueDate);
+    const repeatingTemplate = createTaskEditRepeatingTemplate(repeating, isRepeating);
     const colorsTemplate = createTaskEditColorsTemplate(color);
 
     const deadlineClassName = checkIsTaskExpired(dueDate)
       ? `card--deadline`
       : ``;
-    const repeatingClassName = checkIsTaskRepeating(repeating)
-      ? `card--repeat`
-      : ``;
+    const repeatingClassName = isRepeating ? `card--repeat` : ``;
 
     return `
       <article class="card card--edit card--${color} ${deadlineClassName} ${repeatingClassName}">
@@ -78,13 +98,56 @@ class EditTask extends AbstractView {
     `;
   }
 
+  #initListeners = () => {
+    const dueDateBtnNode = this.node.querySelector(`.card__date-deadline-toggle`);
+    const repeatingBtnNode = this.node.querySelector(`.card__repeat-toggle`);
+
+    dueDateBtnNode.addEventListener(`click`, this.#onDueDateToggle);
+    repeatingBtnNode.addEventListener(`click`, this.#onRepeatingToggle);
+    this.setOnSubmit(this.callbacks.onSubmit);
+  };
+
+
+  #updateDate = (taskPayload: Partial<ITask>) => {
+    this.#task = {
+      ...this.#task,
+      ...taskPayload,
+    };
+
+    this.#updateNode();
+  }
+
+  #updateNode = () => {
+    let prevElement = this.node;
+    this.removeElement();
+
+    const newElement = this.node;
+
+    replaceWithElement(prevElement, newElement);
+    prevElement = null;
+
+    this.#initListeners();
+  }
+
+  #onDueDateToggle = () => {
+    this.#updateDate({
+      isDueDate: !this.#task.isDueDate,
+    });
+  };
+
+  #onRepeatingToggle = () => {
+    this.#updateDate({
+      isRepeating: !this.#task.isRepeating,
+    });
+  };
+
   #onSubmit = (evt: Event) => {
     evt.preventDefault();
 
-    this.callbacks.onSubmit();
+    this.callbacks.onSubmit(TaskEdit.parseTask(this.#task));
   };
 
-  setOnSubmit(callback: BindingCb) {
+  public setOnSubmit(callback: BindingCbWithOne<ITask>) {
     this.callbacks.onSubmit = callback;
 
     const formNode = this.node.querySelector(`.card__form`);
@@ -93,4 +156,4 @@ class EditTask extends AbstractView {
   }
 }
 
-export default EditTask;
+export default TaskEdit;
