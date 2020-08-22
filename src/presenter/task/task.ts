@@ -50,14 +50,22 @@ class Task {
       return;
     }
 
-    switch (this.#taskMode) {
-      case TaskMode.PREVIEW:
-        replaceWithElement(prevTaskComponent, this.#taskComponent);
-        break;
-      case TaskMode.EDIT:
-        replaceWithElement(prevTaskEditComponent, this.#taskEditComponent);
-        break;
+    if (this.#taskListComponent.node.contains(prevTaskComponent.node)) {
+      replaceWithElement(prevTaskComponent, this.#taskComponent,);
     }
+
+    if (this.#taskListComponent.node.contains(prevTaskEditComponent.node)) {
+      replaceWithElement(prevTaskEditComponent, this.#taskEditComponent);
+    }
+
+    // switch (this.#taskMode) {
+    //   case TaskMode.PREVIEW:
+    //     replaceWithElement(prevTaskComponent, this.#taskComponent);
+    //     break;
+    //   case TaskMode.EDIT:
+    //     replaceWithElement(prevTaskEditComponent, this.#taskEditComponent);
+    //     break;
+    // }
 
     removeElement(prevTaskComponent);
     removeElement(prevTaskEditComponent);
