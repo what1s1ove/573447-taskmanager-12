@@ -4,50 +4,35 @@ import 'flatpickr/dist/flatpickr.min.css';
 import Smart from '~/view/smart/smart';
 import { checkIsTaskRepeating } from '~/helpers';
 import { ITask } from '~/common/interfaces';
+import { TaskColor, TaskRepeatDay } from '~/common/enums';
 import { BindingCbWithOne } from '~/common/types';
-import { TASK_DEFAULT_REPEATING } from '~/common/constants';
 import { createTaskEditDateTemplate } from './templates/task-date/task-date';
 import { createTaskEditRepeatingTemplate } from './templates/task-repeating/task-repeating';
 import { createTaskEditColorsTemplate } from './templates/task-color/task-color';
-import { EMPTY_TASK } from '../task-list/common';
-import { TaskColor, TaskRepeatDay } from '~/common/enums';
+import { getRawTask, getClearTask } from './helpers';
+import { IRawTask, EMPTY_TASK } from './common';
 
 type CallBacks = {
   onSubmit: BindingCbWithOne<ITask>;
 };
 
-class TaskEdit extends Smart<ITask> {
+class TaskEdit extends Smart<IRawTask> {
   protected callbacks: CallBacks;
 
   #datepicker: Instance | null;
 
-  data: ITask | null;
+  data: IRawTask;
 
   static parseTaskToData(task: ITask) {
-    const parsedData = {
-      ...task,
-      isDueDate: task.dueDate !== null,
-      isRepeating: checkIsTaskRepeating(task.repeating)
-    };
+    const rawTask = getRawTask(task);
 
-    return parsedData;
+    return rawTask;
   }
 
-  static parseDataToTask(data: ITask) {
-    const parsedTask = { ...data };
+  static parseDataToTask(rawTask: ITask) {
+    const clearTask = getClearTask(rawTask);
 
-    if (!parsedTask.isDueDate) {
-      parsedTask.dueDate = null;
-    }
-
-    if (!parsedTask.isRepeating) {
-      parsedTask.repeating = TASK_DEFAULT_REPEATING;
-    }
-
-    delete parsedTask.isDueDate;
-    delete parsedTask.isRepeating;
-
-    return parsedTask;
+    return clearTask;
   }
 
   constructor(task: ITask | null) {
