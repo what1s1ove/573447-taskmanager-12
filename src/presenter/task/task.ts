@@ -1,5 +1,6 @@
 import { replaceWithElement, renderElement, removeElement } from '~/helpers';
 import { KeyboardKey, RenderPosition } from '~/common/enums';
+import { BindingCb } from '~/common/types';
 import Abstract from '~/view/abstract/abstract';
 import TaskView from '~/view/task/task';
 import TaskEditView from '~/view/task-edit/task-edit';
@@ -11,6 +12,8 @@ class Task {
 
   #changeTask: ChangeTaskCb;
 
+  #changeMode: BindingCb;
+
   #task: ITask;
 
   #taskMode: TaskMode;
@@ -19,61 +22,19 @@ class Task {
 
   #taskEditComponent: TaskEditView | null;
 
-  constructor(taskListNode: Abstract, changeTask: ChangeTaskCb) {
+  constructor(
+    taskListNode: Abstract,
+    changeTask: ChangeTaskCb,
+    changeMode: BindingCb
+  ) {
     this.#taskListComponent = taskListNode;
     this.#changeTask = changeTask;
+    this.#changeMode = changeMode;
 
     this.#taskMode = TaskMode.PREVIEW;
 
     this.#taskComponent = null;
     this.#taskEditComponent = null;
-  }
-
-  public init(task: ITask) {
-    this.#task = task;
-
-    const prevTaskComponent = this.#taskComponent;
-    const prevTaskEditComponent = this.#taskEditComponent;
-
-    this.#taskComponent = new TaskView(task);
-    this.#taskEditComponent = new TaskEditView(task);
-
-    this.#initListeners();
-
-    if (!prevTaskComponent || !prevTaskEditComponent) {
-      renderElement(
-        this.#taskListComponent,
-        this.#taskComponent,
-        RenderPosition.BEFORE_END
-      );
-
-      return;
-    }
-
-    if (this.#taskListComponent.node.contains(prevTaskComponent.node)) {
-      replaceWithElement(prevTaskComponent, this.#taskComponent,);
-    }
-
-    if (this.#taskListComponent.node.contains(prevTaskEditComponent.node)) {
-      replaceWithElement(prevTaskEditComponent, this.#taskEditComponent);
-    }
-
-    // switch (this.#taskMode) {
-    //   case TaskMode.PREVIEW:
-    //     replaceWithElement(prevTaskComponent, this.#taskComponent);
-    //     break;
-    //   case TaskMode.EDIT:
-    //     replaceWithElement(prevTaskEditComponent, this.#taskEditComponent);
-    //     break;
-    // }
-
-    removeElement(prevTaskComponent);
-    removeElement(prevTaskEditComponent);
-  }
-
-  public destroy() {
-    removeElement(this.#taskComponent);
-    removeElement(this.#taskEditComponent);
   }
 
   #initListeners = () => {
@@ -87,12 +48,17 @@ class Task {
     replaceWithElement(this.#taskComponent, this.#taskEditComponent);
 
     document.addEventListener(`keydown`, this.#onEscKeyDown);
+
+    this.#changeMode();
+    this.#taskMode = TaskMode.EDIT;
   };
 
   #replaceFormToCard = () => {
     replaceWithElement(this.#taskEditComponent, this.#taskComponent);
 
     document.removeEventListener(`keydown`, this.#onEscKeyDown);
+
+    this.#taskMode = TaskMode.PREVIEW;
   };
 
   #onEscKeyDown = (evt: KeyboardEvent) => {
@@ -128,6 +94,51 @@ class Task {
     this.#changeTask(task);
     this.#replaceFormToCard();
   };
+
+  public resetView = () => {
+    if (this.#taskMode !== TaskMode.PREVIEW) {
+      this.#replaceFormToCard();
+    }
+  }
+
+  public destroy() {
+    removeElement(this.#taskComponent);
+    removeElement(this.#taskEditComponent);
+  }
+
+  public init(task: ITask) {
+    this.#task = task;
+
+    const prevTaskComponent = this.#taskComponent;
+    const prevTaskEditComponent = this.#taskEditComponent;
+
+    this.#taskComponent = new TaskView(task);
+    this.#taskEditComponent = new TaskEditView(task);
+
+    this.#initListeners();
+
+    if (!prevTaskComponent || !prevTaskEditComponent) {
+      renderElement(
+        this.#taskListComponent,
+        this.#taskComponent,
+        RenderPosition.BEFORE_END
+      );
+
+      return;
+    }
+
+    switch (this.#taskMode) {
+      case TaskMode.PREVIEW:
+        replaceWithElement(prevTaskComponent, this.#taskComponent);
+        break;
+      case TaskMode.EDIT:
+        replaceWithElement(prevTaskEditComponent, this.#taskEditComponent);
+        break;
+    }
+
+    removeElement(prevTaskComponent);
+    removeElement(prevTaskEditComponent);
+  }
 }
 
 export default Task;

@@ -64,7 +64,11 @@ class Board {
   };
 
   #renderTask = (task: ITask) => {
-    const taskPresenter = new TaskPresenter(this.#taskListComponent, this.#changeTask);
+    const taskPresenter = new TaskPresenter(
+      this.#taskListComponent,
+      this.#changeTask,
+      this.#changeTaskMode
+    );
 
     taskPresenter.init(task)
 
@@ -157,6 +161,10 @@ class Board {
     this.#clearTaskList();
     this.#renderTaskList();
   };
+
+  #changeTaskMode = () => {
+    Object.values(this.#taskPresenters).forEach((it) => it.resetView());
+  }
 
   public init(tasks: ITask[]) {
     this.#boardTasks = tasks.slice();
