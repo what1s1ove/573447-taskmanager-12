@@ -33,7 +33,7 @@ class Task extends AbstractView {
       isFavorite,
     } = this.#task;
 
-    const date = formatTaskDueDate(dueDate);
+    const date = dueDate ? formatTaskDueDate(dueDate) : ``;
 
     const deadlineClassName = checkIsTaskExpired(dueDate)
       ? `card--deadline`

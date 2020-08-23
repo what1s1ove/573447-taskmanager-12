@@ -54,12 +54,13 @@ class TaskEdit extends Smart<IRawTask> {
     } = this.data;
 
     const dateTemplate = createTaskEditDateTemplate(dueDate, isDueDate);
-    const repeatingTemplate = createTaskEditRepeatingTemplate(repeating,isRepeating);
+    const repeatingTemplate = createTaskEditRepeatingTemplate(repeating, isRepeating);
     const colorsTemplate = createTaskEditColorsTemplate(color);
 
     const repeatingClassName = isRepeating ? `card--repeat` : ``;
 
-    const isFormDisabled = (isDueDate && dueDate === null) || (isRepeating && !checkIsTaskRepeating(repeating));
+    const isFormDisabled = (isDueDate && dueDate === null)
+      || (isRepeating && !checkIsTaskRepeating(repeating));
 
     return `
       <article class="card card--edit card--${color} ${repeatingClassName}">
@@ -121,12 +122,12 @@ class TaskEdit extends Smart<IRawTask> {
         onChange: this.#onDueDateChange,
       });
     }
-  }
+  };
 
   #onDescInput = ({ target }: Event) => {
     this.updateData({
-        description: (target as HTMLInputElement).value,
-      }, true);
+      description: (target as HTMLInputElement).value,
+    }, true);
   };
 
   #onDueDateToggle = () => {
@@ -153,7 +154,7 @@ class TaskEdit extends Smart<IRawTask> {
     this.updateData({
       dueDate: userDate
     });
-  }
+  };
 
   #onRepeatingChange = ({ target }: Event) => {
     const { value, checked } = target as HTMLInputElement;
@@ -164,14 +165,14 @@ class TaskEdit extends Smart<IRawTask> {
         ...this.data.repeating,
         [repeatingDay]: checked
       }
-    })
-  }
+    });
+  };
 
   #onColorChange = ({ target }: Event) => {
     this.updateData({
       color: (target as HTMLInputElement).value as TaskColor,
     });
-  }
+  };
 
   #onSubmit = (evt: Event) => {
     evt.preventDefault();
@@ -180,8 +181,8 @@ class TaskEdit extends Smart<IRawTask> {
   };
 
   public resetTask = (task: ITask) => {
-    this.updateData(TaskEdit.parseDataToTask(task))
-  }
+    this.updateData(TaskEdit.parseDataToTask(task));
+  };
 
   public setOnSubmit(callback: BindingCbWithOne<ITask>) {
     this.callbacks.onSubmit = callback;

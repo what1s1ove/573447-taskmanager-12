@@ -9,18 +9,18 @@ const createTaskEditDateTemplate = (dueDate: TaskDueDate, isDueDate: boolean) =>
     </span>
   </button>
   ${isDueDate
-  ? `<fieldset class="card__date-deadline">
-      <label class="card__input-deadline-wrap">
-      <input
-        class="card__date"
-        type="text"
-        placeholder=""
-        name="date"
-        value="${formatTaskDueDate(dueDate)}"
-      />
-    </label>
-  </fieldset>`
-  : ``}
+    ? `<fieldset class="card__date-deadline">
+          <label class="card__input-deadline-wrap">
+          <input
+            class="card__date"
+            type="text"
+            placeholder=""
+            name="date"
+            value="${formatTaskDueDate(dueDate)}"
+          />
+        </label>
+      </fieldset>`
+    : ``}
 `;
 
 export { createTaskEditDateTemplate };

@@ -99,7 +99,7 @@ class Task {
     if (this.#taskMode !== TaskMode.PREVIEW) {
       this.#replaceFormToCard();
     }
-  }
+  };
 
   public destroy() {
     removeElement(this.#taskComponent);

@@ -1,4 +1,9 @@
-import { renderElement, removeElement, getRankByType, updateItem } from '~/helpers';
+import {
+  renderElement,
+  removeElement,
+  getRankByType,
+  updateItem,
+} from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { RenderPosition, SortType } from '~/common/enums';
 import TaskPresenter from '~/presenter/task/task';
@@ -22,7 +27,7 @@ class Board {
 
   #currentSortType: SortType;
 
-  #taskPresenters: Record<number, TaskPresenter>
+  #taskPresenters: Record<number, TaskPresenter>;
 
   #boardContainerNode: Element;
 
@@ -70,16 +75,16 @@ class Board {
       this.#changeTaskMode
     );
 
-    taskPresenter.init(task)
+    taskPresenter.init(task);
 
     this.#taskPresenters[task.id] = taskPresenter;
   };
 
   #changeTask = (task: ITask) => {
-    this.#boardTasks = updateItem(this.#boardTasks, task, 'id');
-    this.#initialTasks = updateItem(this.#initialTasks, task, 'id');
+    this.#boardTasks = updateItem(this.#boardTasks, task, `id`);
+    this.#initialTasks = updateItem(this.#initialTasks, task, `id`);
     this.#taskPresenters[task.id].init(task);
-  }
+  };
 
   #renderTasks = (from: number, to: number) => {
     this.#boardTasks.slice(from, to).forEach((it) => this.#renderTask(it));
@@ -164,7 +169,7 @@ class Board {
 
   #changeTaskMode = () => {
     Object.values(this.#taskPresenters).forEach((it) => it.resetView());
-  }
+  };
 
   public init(tasks: ITask[]) {
     this.#boardTasks = tasks.slice();
