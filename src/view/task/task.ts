@@ -1,12 +1,11 @@
 import AbstractView from '~/view/abstract/abstract';
 import {
-  getFormattedDate,
+  formatTaskDueDate,
   checkIsTaskExpired,
   checkIsTaskRepeating,
 } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { BindingCb } from '~/common/types';
-import { DateFormatType } from '~/common/enums';
 
 type CallBacks = {
   onEditClick: BindingCb;
@@ -34,9 +33,7 @@ class Task extends AbstractView {
       isFavorite,
     } = this.#task;
 
-    const date = dueDate
-      ? getFormattedDate(DateFormatType.FULLMONTH_DAY, dueDate)
-      : ``;
+    const date = formatTaskDueDate(dueDate);
 
     const deadlineClassName = checkIsTaskExpired(dueDate)
       ? `card--deadline`

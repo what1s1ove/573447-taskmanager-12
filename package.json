@@ -16,6 +16,7 @@
     "eslint-config-airbnb-typescript": "9.0.0",
     "eslint-import-resolver-alias": "1.1.2",
     "eslint-plugin-import": "2.22.0",
+    "moment-locales-webpack-plugin": "1.2.0",
     "prettier": "2.0.5",
     "style-loader": "1.2.1",
     "stylelint-config-htmlacademy": "0.1.4",
@@ -26,7 +27,8 @@
     "webpack-dev-server": "3.11.0"
   },
   "dependencies": {
-    "flatpickr": "4.6.6"
+    "flatpickr": "4.6.6",
+    "moment": "2.27.0"
   },
   "engines": {
     "node": "12"

@@ -1,6 +1,5 @@
 import { TaskDueDate } from '~/common/types';
-import { getFormattedDate } from '~/helpers';
-import { DateFormatType } from '~/common/enums';
+import { formatTaskDueDate } from '~/helpers';
 
 const createTaskEditDateTemplate = (dueDate: TaskDueDate, isDueDate: boolean) => `
   <button class="card__date-deadline-toggle" type="button">
@@ -17,7 +16,7 @@ const createTaskEditDateTemplate = (dueDate: TaskDueDate, isDueDate: boolean) =>
         type="text"
         placeholder=""
         name="date"
-        value="${getFormattedDate(DateFormatType.FULLMONTH_DAY, new Date(dueDate))}"
+        value="${formatTaskDueDate(dueDate)}"
       />
     </label>
   </fieldset>`

@@ -16,5 +16,6 @@
     "strictBindCallApply": true,
     "noUnusedParameters": true,
     "suppressImplicitAnyIndexErrors": true,
+    "allowSyntheticDefaultImports": true
   }
 }
