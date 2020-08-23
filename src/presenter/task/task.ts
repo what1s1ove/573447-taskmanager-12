@@ -67,8 +67,6 @@ class Task {
 
       this.#replaceFormToCard();
       this.#taskEditComponent.resetTask(this.#task);
-
-      document.removeEventListener(`keydown`, this.#onEscKeyDown);
     }
   };
 
