@@ -1,5 +1,8 @@
+import flatpickr from 'flatpickr';
+import { Instance } from 'flatpickr/dist/types/instance';
+import 'flatpickr/dist/flatpickr.min.css';
 import Smart from '~/view/smart/smart';
-import { checkIsTaskExpired, checkIsTaskRepeating } from '~/helpers';
+import { checkIsTaskRepeating } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { BindingCbWithOne } from '~/common/types';
 import { TASK_DEFAULT_REPEATING } from '~/common/constants';
@@ -15,6 +18,8 @@ type CallBacks = {
 
 class TaskEdit extends Smart<ITask> {
   protected callbacks: CallBacks;
+
+  #datepicker: Instance | null;
 
   data: ITask | null;
 
@@ -48,6 +53,7 @@ class TaskEdit extends Smart<ITask> {
   constructor(task: ITask | null) {
     super();
     this.data = TaskEdit.parseTaskToData(task ?? EMPTY_TASK);
+    this.#datepicker = null;
 
     this.initListeners();
   }
@@ -66,13 +72,12 @@ class TaskEdit extends Smart<ITask> {
     const repeatingTemplate = createTaskEditRepeatingTemplate(repeating,isRepeating);
     const colorsTemplate = createTaskEditColorsTemplate(color);
 
-    const deadlineClassName = checkIsTaskExpired(dueDate) ? `card--deadline` : ``;
     const repeatingClassName = isRepeating ? `card--repeat` : ``;
 
-    const isFormDisabled = isRepeating && !checkIsTaskRepeating(repeating);
+    const isFormDisabled = (isDueDate && dueDate === null) || (isRepeating && !checkIsTaskRepeating(repeating));
 
     return `
-      <article class="card card--edit card--${color} ${deadlineClassName} ${repeatingClassName}">
+      <article class="card card--edit card--${color} ${repeatingClassName}">
         <form class="card__form" method="get">
           <div class="card__inner">
             <div class="card__color-bar">
@@ -115,6 +120,24 @@ class TaskEdit extends Smart<ITask> {
     `;
   }
 
+  #setDatepicker = () => {
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+
+      this.#datepicker = null;
+    }
+
+    if (this.data.isDueDate) {
+      const cardDateNode = this.node.querySelector(`.card__date`);
+
+      this.#datepicker = flatpickr(cardDateNode, {
+        dateFormat: `j F`,
+        defaultDate: this.data.dueDate,
+        onChange: this.#onDueDateChange,
+      });
+    }
+  }
+
   #onDescInput = ({ target }: Event) => {
     this.updateData({
         description: (target as HTMLInputElement).value,
@@ -138,6 +161,14 @@ class TaskEdit extends Smart<ITask> {
       isDueDate: isRepeating && false
     });
   };
+
+  #onDueDateChange = ([userDate]: Date[]) => {
+    userDate.setHours(23, 59, 59, 999);
+
+    this.updateData({
+      dueDate: userDate
+    });
+  }
 
   #onRepeatingChange = ({ target }: Event) => {
     const { value, checked } = target as HTMLInputElement;
@@ -193,6 +224,7 @@ class TaskEdit extends Smart<ITask> {
     }
 
     this.setOnSubmit(this.callbacks.onSubmit);
+    this.#setDatepicker();
   };
 }
 

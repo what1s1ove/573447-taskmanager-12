@@ -11,17 +11,22 @@
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "3.7.1",
+    "css-loader": "4.2.1",
     "eslint": "6.1.0",
     "eslint-config-airbnb-typescript": "9.0.0",
     "eslint-import-resolver-alias": "1.1.2",
     "eslint-plugin-import": "2.22.0",
     "prettier": "2.0.5",
+    "style-loader": "1.2.1",
     "stylelint-config-htmlacademy": "0.1.4",
     "ts-loader": "8.0.1",
     "typescript": "3.9.7",
     "webpack": "4.44.1",
     "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.0"
+  },
+  "dependencies": {
+    "flatpickr": "4.6.6"
   },
   "engines": {
     "node": "12"

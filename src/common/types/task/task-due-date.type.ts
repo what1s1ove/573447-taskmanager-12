@@ -1,3 +1,3 @@
-type TaskDueDate = Date | string | null;
+type TaskDueDate = Date | null;
 
 export { TaskDueDate };
