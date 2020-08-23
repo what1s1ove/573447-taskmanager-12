@@ -1,5 +1,5 @@
-import AbstractView from '~/view/abstract/abstract';
-import { checkIsTaskExpired, replaceWithElement, checkIsTaskRepeating } from '~/helpers';
+import Smart from '~/view/smart/smart';
+import { checkIsTaskExpired, checkIsTaskRepeating } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { BindingCbWithOne } from '~/common/types';
 import { TASK_DEFAULT_REPEATING } from '~/common/constants';
@@ -13,10 +13,10 @@ type CallBacks = {
   onSubmit: BindingCbWithOne<ITask>;
 };
 
-class TaskEdit extends AbstractView {
+class TaskEdit extends Smart<ITask> {
   protected callbacks: CallBacks;
 
-  #data: ITask | null;
+  data: ITask | null;
 
   static parseTaskToData(task: ITask) {
     const parsedData = {
@@ -47,9 +47,9 @@ class TaskEdit extends AbstractView {
 
   constructor(task: ITask | null) {
     super();
-    this.#data = TaskEdit.parseTaskToData(task ?? EMPTY_TASK);
+    this.data = TaskEdit.parseTaskToData(task ?? EMPTY_TASK);
 
-    this.#initListeners();
+    this.initListeners();
   }
 
   get template() {
@@ -60,7 +60,7 @@ class TaskEdit extends AbstractView {
       repeating,
       isDueDate,
       isRepeating,
-    } = this.#data;
+    } = this.data;
 
     const dateTemplate = createTaskEditDateTemplate(dueDate, isDueDate);
     const repeatingTemplate = createTaskEditRepeatingTemplate(repeating,isRepeating);
@@ -115,7 +115,7 @@ class TaskEdit extends AbstractView {
     `;
   }
 
-  #initListeners = () => {
+  initListeners = () => {
     const descInputNode = this.node.querySelector(`.card__text`);
     const dueDateBtnNode = this.node.querySelector(`.card__date-deadline-toggle`);
     const repeatingBtnNode = this.node.querySelector(`.card__repeat-toggle`);
@@ -126,7 +126,7 @@ class TaskEdit extends AbstractView {
     descInputNode.addEventListener(`input`, this.#onDescInput);
     colorWrapNode.addEventListener(`change`, this.#onColorChange);
 
-    if (this.#data.isRepeating) {
+    if (this.data.isRepeating) {
       const repeatingDaysInner = this.node.querySelector(`.card__repeat-days-inner`);
 
       repeatingDaysInner.addEventListener(`change`, this.#onRepeatingChange);
@@ -135,50 +135,25 @@ class TaskEdit extends AbstractView {
     this.setOnSubmit(this.callbacks.onSubmit);
   };
 
-  #updateData = (dataPayload: Partial<ITask>, isDataUpdating = false) => {
-    this.#data = {
-      ...this.#data,
-      ...dataPayload,
-    };
-
-    if (isDataUpdating) {
-      return;
-    }
-
-    this.#updateNode();
-  };
-
-  #updateNode = () => {
-    let prevElement = this.node;
-    this.removeElement();
-
-    const newElement = this.node;
-
-    replaceWithElement(prevElement, newElement);
-    prevElement = null;
-
-    this.#initListeners();
-  };
-
   #onDescInput = ({ target }: Event) => {
-    this.#updateData({
+    this.updateData({
         description: (target as HTMLInputElement).value,
       }, true);
   };
 
   #onDueDateToggle = () => {
-    const isDueDate = !this.#data.isDueDate;
+    const isDueDate = !this.data.isDueDate;
 
-    this.#updateData({
+    this.updateData({
       isDueDate,
       isRepeating: isDueDate && false
     });
   };
 
   #onRepeatingToggle = () => {
-    const isRepeating = !this.#data.isRepeating;
+    const isRepeating = !this.data.isRepeating;
 
-    this.#updateData({
+    this.updateData({
       isRepeating,
       isDueDate: isRepeating && false
     });
@@ -188,16 +163,16 @@ class TaskEdit extends AbstractView {
     const { value, checked } = target as HTMLInputElement;
     const repeatingDay = value as TaskRepeatDay;
 
-    this.#updateData({
+    this.updateData({
       repeating: {
-        ...this.#data.repeating,
+        ...this.data.repeating,
         [repeatingDay]: checked
       }
     })
   }
 
   #onColorChange = ({ target }: Event) => {
-    this.#updateData({
+    this.updateData({
       color: (target as HTMLInputElement).value as TaskColor,
     });
   }
@@ -205,7 +180,7 @@ class TaskEdit extends AbstractView {
   #onSubmit = (evt: Event) => {
     evt.preventDefault();
 
-    this.callbacks.onSubmit(TaskEdit.parseDataToTask(this.#data));
+    this.callbacks.onSubmit(TaskEdit.parseDataToTask(this.data));
   };
 
   public setOnSubmit(callback: BindingCbWithOne<ITask>) {
