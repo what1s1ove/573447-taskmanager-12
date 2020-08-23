@@ -115,26 +115,6 @@ class TaskEdit extends Smart<ITask> {
     `;
   }
 
-  initListeners = () => {
-    const descInputNode = this.node.querySelector(`.card__text`);
-    const dueDateBtnNode = this.node.querySelector(`.card__date-deadline-toggle`);
-    const repeatingBtnNode = this.node.querySelector(`.card__repeat-toggle`);
-    const colorWrapNode = this.node.querySelector(`.card__colors-wrap`);
-
-    dueDateBtnNode.addEventListener(`click`, this.#onDueDateToggle);
-    repeatingBtnNode.addEventListener(`click`, this.#onRepeatingToggle);
-    descInputNode.addEventListener(`input`, this.#onDescInput);
-    colorWrapNode.addEventListener(`change`, this.#onColorChange);
-
-    if (this.data.isRepeating) {
-      const repeatingDaysInner = this.node.querySelector(`.card__repeat-days-inner`);
-
-      repeatingDaysInner.addEventListener(`change`, this.#onRepeatingChange);
-    }
-
-    this.setOnSubmit(this.callbacks.onSubmit);
-  };
-
   #onDescInput = ({ target }: Event) => {
     this.updateData({
         description: (target as HTMLInputElement).value,
@@ -183,6 +163,10 @@ class TaskEdit extends Smart<ITask> {
     this.callbacks.onSubmit(TaskEdit.parseDataToTask(this.data));
   };
 
+  public resetTask = (task: ITask) => {
+    this.updateData(TaskEdit.parseDataToTask(task))
+  }
+
   public setOnSubmit(callback: BindingCbWithOne<ITask>) {
     this.callbacks.onSubmit = callback;
 
@@ -190,6 +174,26 @@ class TaskEdit extends Smart<ITask> {
 
     formNode.addEventListener(`submit`, this.#onSubmit);
   }
+
+  initListeners = () => {
+    const descInputNode = this.node.querySelector(`.card__text`);
+    const dueDateBtnNode = this.node.querySelector(`.card__date-deadline-toggle`);
+    const repeatingBtnNode = this.node.querySelector(`.card__repeat-toggle`);
+    const colorWrapNode = this.node.querySelector(`.card__colors-wrap`);
+
+    dueDateBtnNode.addEventListener(`click`, this.#onDueDateToggle);
+    repeatingBtnNode.addEventListener(`click`, this.#onRepeatingToggle);
+    descInputNode.addEventListener(`input`, this.#onDescInput);
+    colorWrapNode.addEventListener(`change`, this.#onColorChange);
+
+    if (this.data.isRepeating) {
+      const repeatingDaysInner = this.node.querySelector(`.card__repeat-days-inner`);
+
+      repeatingDaysInner.addEventListener(`change`, this.#onRepeatingChange);
+    }
+
+    this.setOnSubmit(this.callbacks.onSubmit);
+  };
 }
 
 export default TaskEdit;

@@ -100,6 +100,7 @@ class Task {
       evt.preventDefault();
 
       this.#replaceFormToCard();
+      this.#taskEditComponent.resetTask(this.#task);
 
       document.removeEventListener(`keydown`, this.#onEscKeyDown);
     }
