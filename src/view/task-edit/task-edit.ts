@@ -1,24 +1,46 @@
-import AbstractView from '~/view/abstract/abstract';
-import { checkIsTaskExpired, checkIsTaskRepeating } from '~/helpers';
+import flatpickr from 'flatpickr';
+import { Instance } from 'flatpickr/dist/types/instance';
+import 'flatpickr/dist/flatpickr.min.css';
+import Smart from '~/view/smart/smart';
+import { checkIsTaskRepeating } from '~/helpers';
+import { ITask } from '~/common/interfaces';
+import { TaskColor, TaskRepeatDay } from '~/common/enums';
+import { BindingCbWithOne } from '~/common/types';
 import { createTaskEditDateTemplate } from './templates/task-date/task-date';
 import { createTaskEditRepeatingTemplate } from './templates/task-repeating/task-repeating';
 import { createTaskEditColorsTemplate } from './templates/task-color/task-color';
-import { ITask } from '~/common/interfaces';
-import { BindingCb } from '~/common/types';
-import { EMPTY_TASK } from '../task-list/common';
+import { getRawTask, getClearTask } from './helpers';
+import { IRawTask, EMPTY_TASK } from './common';
 
 type CallBacks = {
-  onSubmit: BindingCb;
+  onSubmit: BindingCbWithOne<ITask>;
 };
 
-class EditTask extends AbstractView {
+class TaskEdit extends Smart<IRawTask> {
   protected callbacks: CallBacks;
 
-  #task: ITask | null;
+  #datepicker: Instance | null;
+
+  data: IRawTask;
+
+  static parseTaskToData(task: ITask) {
+    const rawTask = getRawTask(task);
+
+    return rawTask;
+  }
+
+  static parseDataToTask(rawTask: ITask) {
+    const clearTask = getClearTask(rawTask);
+
+    return clearTask;
+  }
 
   constructor(task: ITask | null) {
     super();
-    this.#task = task ?? EMPTY_TASK;
+    this.data = TaskEdit.parseTaskToData(task ?? EMPTY_TASK);
+    this.#datepicker = null;
+
+    this.initListeners();
   }
 
   get template() {
@@ -26,22 +48,22 @@ class EditTask extends AbstractView {
       color,
       description,
       dueDate,
-      repeating
-    } = this.#task;
+      repeating,
+      isDueDate,
+      isRepeating,
+    } = this.data;
 
-    const dateTemplate = createTaskEditDateTemplate(dueDate);
-    const repeatingTemplate = createTaskEditRepeatingTemplate(repeating);
+    const dateTemplate = createTaskEditDateTemplate(dueDate, isDueDate);
+    const repeatingTemplate = createTaskEditRepeatingTemplate(repeating, isRepeating);
     const colorsTemplate = createTaskEditColorsTemplate(color);
 
-    const deadlineClassName = checkIsTaskExpired(dueDate)
-      ? `card--deadline`
-      : ``;
-    const repeatingClassName = checkIsTaskRepeating(repeating)
-      ? `card--repeat`
-      : ``;
+    const repeatingClassName = isRepeating ? `card--repeat` : ``;
+
+    const isFormDisabled = (isDueDate && dueDate === null)
+      || (isRepeating && !checkIsTaskRepeating(repeating));
 
     return `
-      <article class="card card--edit card--${color} ${deadlineClassName} ${repeatingClassName}">
+      <article class="card card--edit card--${color} ${repeatingClassName}">
         <form class="card__form" method="get">
           <div class="card__inner">
             <div class="card__color-bar">
@@ -69,7 +91,13 @@ class EditTask extends AbstractView {
               </div>
             </div>
             <div class="card__status-btns">
-              <button class="card__save" type="submit">save</button>
+              <button
+                ${isFormDisabled ? `disabled` : ``}
+                class="card__save"
+                type="submit"
+                >
+                  save
+              </button>
               <button class="card__delete" type="button">delete</button>
             </div>
           </div>
@@ -78,19 +106,112 @@ class EditTask extends AbstractView {
     `;
   }
 
+  #setDatepicker = () => {
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+
+      this.#datepicker = null;
+    }
+
+    if (this.data.isDueDate) {
+      const cardDateNode = this.node.querySelector(`.card__date`);
+
+      this.#datepicker = flatpickr(cardDateNode, {
+        dateFormat: `j F`,
+        defaultDate: this.data.dueDate,
+        onChange: this.#onDueDateChange,
+      });
+    }
+  };
+
+  #onDescInput = ({ target }: Event) => {
+    this.updateData({
+      description: (target as HTMLInputElement).value,
+    }, true);
+  };
+
+  #onDueDateToggle = () => {
+    const isDueDate = !this.data.isDueDate;
+
+    this.updateData({
+      isDueDate,
+      isRepeating: isDueDate && false
+    });
+  };
+
+  #onRepeatingToggle = () => {
+    const isRepeating = !this.data.isRepeating;
+
+    this.updateData({
+      isRepeating,
+      isDueDate: isRepeating && false
+    });
+  };
+
+  #onDueDateChange = ([userDate]: Date[]) => {
+    userDate.setHours(23, 59, 59, 999);
+
+    this.updateData({
+      dueDate: userDate
+    });
+  };
+
+  #onRepeatingChange = ({ target }: Event) => {
+    const { value, checked } = target as HTMLInputElement;
+    const repeatingDay = value as TaskRepeatDay;
+
+    this.updateData({
+      repeating: {
+        ...this.data.repeating,
+        [repeatingDay]: checked
+      }
+    });
+  };
+
+  #onColorChange = ({ target }: Event) => {
+    this.updateData({
+      color: (target as HTMLInputElement).value as TaskColor,
+    });
+  };
+
   #onSubmit = (evt: Event) => {
     evt.preventDefault();
 
-    this.callbacks.onSubmit();
+    this.callbacks.onSubmit(TaskEdit.parseDataToTask(this.data));
   };
 
-  setOnSubmit(callback: BindingCb) {
+  public resetTask = (task: ITask) => {
+    this.updateData(TaskEdit.parseDataToTask(task));
+  };
+
+  public setOnSubmit(callback: BindingCbWithOne<ITask>) {
     this.callbacks.onSubmit = callback;
 
     const formNode = this.node.querySelector(`.card__form`);
 
     formNode.addEventListener(`submit`, this.#onSubmit);
   }
+
+  initListeners = () => {
+    const descInputNode = this.node.querySelector(`.card__text`);
+    const dueDateBtnNode = this.node.querySelector(`.card__date-deadline-toggle`);
+    const repeatingBtnNode = this.node.querySelector(`.card__repeat-toggle`);
+    const colorWrapNode = this.node.querySelector(`.card__colors-wrap`);
+
+    dueDateBtnNode.addEventListener(`click`, this.#onDueDateToggle);
+    repeatingBtnNode.addEventListener(`click`, this.#onRepeatingToggle);
+    descInputNode.addEventListener(`input`, this.#onDescInput);
+    colorWrapNode.addEventListener(`change`, this.#onColorChange);
+
+    if (this.data.isRepeating) {
+      const repeatingDaysInner = this.node.querySelector(`.card__repeat-days-inner`);
+
+      repeatingDaysInner.addEventListener(`change`, this.#onRepeatingChange);
+    }
+
+    this.setOnSubmit(this.callbacks.onSubmit);
+    this.#setDatepicker();
+  };
 }
 
-export default EditTask;
+export default TaskEdit;
