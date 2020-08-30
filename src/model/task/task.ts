@@ -2,7 +2,7 @@ import { Observer } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import { UpdateType } from '~/common/enums';
 
-class Tasks extends Observer {
+class Tasks extends Observer<ITask> {
   #tasks: ITask[];
 
   constructor() {

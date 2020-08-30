@@ -1,25 +1,22 @@
 import { UpdateType } from '~/common/enums';
 import { BindingCbWithTwo } from '~/common/types';
-import { ITask } from '~/common/interfaces';
 
-type TaskObserverCb = BindingCbWithTwo<UpdateType, ITask>;
-
-class Observer {
-  #observers: TaskObserverCb[];
+class Observer<T> {
+  #observers: BindingCbWithTwo<UpdateType, T>[];
 
   constructor() {
     this.#observers = [];
   }
 
-  protected notify = (event: UpdateType, payload: ITask) => {
+  protected notify = (event: UpdateType, payload: T) => {
     this.#observers.forEach((observer) => observer(event, payload));
   };
 
-  public addObserver(observer: TaskObserverCb) {
+  public addObserver(observer: BindingCbWithTwo<UpdateType, T>) {
     this.#observers.push(observer);
   }
 
-  public removeObserver(observer: TaskObserverCb) {
+  public removeObserver(observer: BindingCbWithTwo<UpdateType, T>) {
     this.#observers = this.#observers.filter(
       (existedObserver) => existedObserver !== observer
     );

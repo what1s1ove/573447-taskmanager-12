@@ -1,7 +1,8 @@
 import { generateTasks, generateFilters, renderElement } from '~/helpers';
-import { RenderPosition } from '~/common/enums';
+import { RenderPosition, FilterType } from '~/common/enums';
 import BoardPresenter from '~/presenter/board/board';
 import TasksModel from '~/model/task/task';
+import FilterModel from '~/model/filter/filter';
 import SiteMenuView from '~/view/site-menu/site-menu';
 import FilterView from './view/filter/filter';
 
@@ -13,8 +14,13 @@ const filters = generateFilters(tasks);
 const tasksModel = new TasksModel();
 tasksModel.tasks = tasks;
 
+const filterModel = new FilterModel();
+
 const siteMenuComponent = new SiteMenuView();
-const filterComponent = new FilterView(filters);
+const filterComponent = new FilterView({
+  filters,
+  currentFilter: FilterType.ALL,
+});
 
 const siteMainNode = document.querySelector(`.main`);
 const siteHeaderNode = siteMainNode.querySelector(`.main__control`);
