@@ -1,5 +1,4 @@
 import FilterView from '~/view/filter/filter';
-import Abstract from '~/view/abstract/abstract';
 import FilterModel from '~/model/filter/filter';
 import TaskModel from '~/model/task/task';
 import { FilterType, RenderPosition, UpdateType } from '~/common/enums';
