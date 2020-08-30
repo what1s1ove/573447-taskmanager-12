@@ -9,11 +9,11 @@ class Tasks extends Observer {
     this.#tasks = [];
   }
 
-  setTasks(tasks: ITask[]) {
+  set tasks(tasks: ITask[]) {
     this.#tasks = tasks.slice();
   }
 
-  getTasks() {
+  get tasks() {
     return this.#tasks;
   }
 }

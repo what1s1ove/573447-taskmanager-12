@@ -25,10 +25,6 @@ type Constructor = {
 };
 
 class Board {
-  #boardTasks: ITask[];
-
-  #initialTasks: ITask[];
-
   #renderedTaskCount: number;
 
   #tasksModel: TaskModel;
@@ -63,6 +59,21 @@ class Board {
     this.#loadMoreButtonComponent = new LoadMoreButtonView();
   }
 
+  get tasks() {
+    switch (this.#currentSortType) {
+      case SortType.DATE_UP:
+      case SortType.DATE_DOWN:
+        this.#tasksModel.tasks.sort((a, b) => {
+          const rank = getRankByType(a, b, this.#currentSortType);
+
+          return rank;
+        });
+        break;
+    }
+
+    return this.#tasksModel.tasks;
+  }
+
   #renderNoTask = () => {
     renderElement(
       this.#boardComponent,
@@ -94,17 +105,11 @@ class Board {
   };
 
   #changeTask = (task: ITask) => {
-    this.#boardTasks = updateItem(this.#boardTasks, task, `id`);
-    this.#initialTasks = updateItem(this.#initialTasks, task, `id`);
     this.#taskPresenters[task.id].init(task);
   };
 
-  #renderTasks = (from: number, to: number) => {
-    this.#boardTasks.slice(from, to).forEach((it) => this.#renderTask(it));
-  };
-
-  #getTasks = () => {
-    return this.#tasksModel.getTasks();
+  #renderTasks = (tasks: ITask[]) => {
+    tasks.forEach((it) => this.#renderTask(it));
   };
 
   #clearTaskList = () => {
@@ -113,32 +118,13 @@ class Board {
     this.#renderedTaskCount = TASK_COUNT_PER_STEP;
   };
 
-  #sortTasks = (sortType: SortType) => {
-    switch (sortType) {
-      case SortType.DATE_UP:
-      case SortType.DATE_DOWN:
-        this.#boardTasks.sort((a, b) => {
-          const rank = getRankByType(a, b, sortType);
-
-          return rank;
-        });
-        break;
-      default:
-        this.#boardTasks = this.#initialTasks.slice();
-    }
-
-    this.#currentSortType = sortType;
-  };
-
   #renderTaskList = () => {
-    const maxTaskPerStepCount = Math.min(
-      this.#boardTasks.length,
-      TASK_COUNT_PER_STEP
-    );
+    const taskCount = this.tasks.length;
+    const tasks = this.tasks.slice(0, Math.min(taskCount, TASK_COUNT_PER_STEP));
 
-    this.#renderTasks(START_TASK_RENDER_COUNT, maxTaskPerStepCount);
+    this.#renderTasks(tasks);
 
-    if (this.#boardTasks.length > TASK_COUNT_PER_STEP) {
+    if (taskCount > TASK_COUNT_PER_STEP) {
       this.#renderLoadMoreButton();
     }
   };
@@ -154,9 +140,7 @@ class Board {
   };
 
   #renderBoard = () => {
-    const isNoTaskComponentRender = this.#boardTasks.every(
-      (task) => task.isArchive
-    );
+    const isNoTaskComponentRender = this.tasks.every((task) => task.isArchive);
 
     if (isNoTaskComponentRender) {
       this.#renderNoTask();
@@ -169,14 +153,14 @@ class Board {
   };
 
   #loadMoreTasks = () => {
-    this.#renderTasks(
-      this.#renderedTaskCount,
-      this.#renderedTaskCount + TASK_COUNT_PER_STEP
-    );
+    const taskCount = this.tasks.length;
+    const newRenderedTaskCount = Math.min(taskCount, this.#renderedTaskCount + TASK_COUNT_PER_STEP);
+    const tasks = this.tasks.slice(this.#renderedTaskCount, newRenderedTaskCount);
 
-    this.#renderedTaskCount += TASK_COUNT_PER_STEP;
+    this.#renderTasks(tasks);
+    this.#renderedTaskCount = newRenderedTaskCount;
 
-    if (this.#renderedTaskCount >= this.#boardTasks.length) {
+    if (this.#renderedTaskCount >= taskCount) {
       removeElement(this.#loadMoreButtonComponent);
     }
   };
@@ -186,7 +170,7 @@ class Board {
       return;
     }
 
-    this.#sortTasks(sortType);
+    this.#currentSortType = sortType;
     this.#clearTaskList();
     this.#renderTaskList();
   };
@@ -195,10 +179,7 @@ class Board {
     Object.values(this.#taskPresenters).forEach((it) => it.resetView());
   };
 
-  public init(tasks: ITask[]) {
-    this.#boardTasks = tasks.slice();
-    this.#initialTasks = tasks.slice();
-
+  public init() {
     renderElement(
       this.#boardContainerNode,
       this.#boardComponent,

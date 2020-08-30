@@ -11,7 +11,7 @@ const tasks = generateTasks(TASK_COUNT);
 const filters = generateFilters(tasks);
 
 const tasksModel = new TasksModel();
-tasksModel.setTasks(tasks);
+tasksModel.tasks = tasks;
 
 const siteMenuComponent = new SiteMenuView();
 const filterComponent = new FilterView(filters);
@@ -27,4 +27,4 @@ const boardPresenter = new BoardPresenter({
   tasksModel,
 });
 
-boardPresenter.init(tasks);
+boardPresenter.init();
