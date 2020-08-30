@@ -1,4 +1,10 @@
-import { replaceWithElement, renderElement, removeElement } from '~/helpers';
+import {
+  replaceWithElement,
+  renderElement,
+  removeElement,
+  checkIsTaskRepeating,
+  checkIsDatesEqual,
+} from '~/helpers';
 import {
   KeyboardKey,
   RenderPosition,
@@ -46,9 +52,10 @@ class Task {
 
   #initListeners = () => {
     this.#taskComponent.setOnEditClick(this.#onEditClick);
-    this.#taskComponent.setOnFavoriteClick(this.#onFavoriteClick);
-    this.#taskComponent.setOnArchiveClick(this.#onArchiveClick);
-    this.#taskEditComponent.setOnSubmit(this.#onSubmit);
+    this.#taskComponent.setOnFavoriteClick(this.#favoriteTask);
+    this.#taskComponent.setOnArchiveClick(this.#archiveTask);
+    this.#taskEditComponent.setOnSubmit(this.#submitForm);
+    this.#taskEditComponent.setOnDeleteClick(this.#deleteTask);
   };
 
   #replaceCardToForm = () => {
@@ -81,23 +88,34 @@ class Task {
     this.#replaceCardToForm();
   };
 
-  #onFavoriteClick = () => {
+  #favoriteTask = () => {
     this.#changeTask(UserAction.UPDATE_TASK, UpdateType.MINOR, {
       ...this.#task,
       isFavorite: !this.#task.isFavorite,
     });
   };
 
-  #onArchiveClick = () => {
+  #archiveTask = () => {
     this.#changeTask(UserAction.UPDATE_TASK, UpdateType.MINOR, {
       ...this.#task,
       isArchive: !this.#task.isArchive,
     });
   };
 
-  #onSubmit = (task: ITask) => {
-    this.#changeTask(UserAction.UPDATE_TASK, UpdateType.MINOR, task);
+  #submitForm = (task: ITask) => {
+    const isMinorUpdate = !checkIsDatesEqual(this.#task.dueDate, task.dueDate)
+      || checkIsTaskRepeating(this.#task.repeating) !== checkIsTaskRepeating(task.repeating);
+
+    this.#changeTask(
+      UserAction.UPDATE_TASK,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      task
+    );
     this.#replaceFormToCard();
+  };
+
+  #deleteTask = (task: ITask) => {
+    this.#changeTask(UserAction.DELETE_TASK, UpdateType.MINOR, task);
   };
 
   public resetView = () => {

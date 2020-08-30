@@ -159,23 +159,6 @@ class Board {
     tasks.forEach((it) => this.#renderTask(it));
   };
 
-  #clearTaskList = () => {
-    Object.values(this.#taskPresenters).forEach((it) => it.destroy());
-
-    this.#renderedTaskCount = TASK_COUNT_PER_STEP;
-  };
-
-  #renderTaskList = () => {
-    const taskCount = this.tasks.length;
-    const tasks = this.tasks.slice(0, Math.min(taskCount, TASK_COUNT_PER_STEP));
-
-    this.#renderTasks(tasks);
-
-    if (taskCount > TASK_COUNT_PER_STEP) {
-      this.#renderLoadMoreButton();
-    }
-  };
-
   #renderLoadMoreButton = () => {
     if (this.#loadMoreButtonComponent !== null) {
       this.#loadMoreButtonComponent = null;
