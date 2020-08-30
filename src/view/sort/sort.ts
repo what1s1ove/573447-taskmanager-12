@@ -4,6 +4,11 @@ import { BindingCbWithOne } from '~/common/types';
 
 const SORT_DATA_ATTR = `data-sort-type`;
 
+type Constructor = {
+  currentSort: SortType;
+  sorts: SortType[];
+};
+
 type ChangeSortTypeCb = BindingCbWithOne<SortType>;
 
 type CallBacks = {
@@ -13,18 +18,21 @@ type CallBacks = {
 class Sort extends AbstractView {
   protected callbacks: CallBacks;
 
+  #currentSort: SortType;
+
   #sorts: SortType[];
 
-  constructor(sorts: SortType[]) {
+  constructor({ currentSort, sorts }: Constructor) {
     super();
+    this.#currentSort = currentSort;
     this.#sorts = sorts;
   }
 
   get template() {
     const sortTemplates = this.#sorts.reduce((acc, it) => (acc.concat(`
       <a
+        class="board__filter ${this.#currentSort === it ? `board__filter--active` : ``}"
         href="#"
-        class="board__filter"
         ${SORT_DATA_ATTR}="${it}"
       >
         SORT BY ${it}
@@ -39,7 +47,7 @@ class Sort extends AbstractView {
   }
 
   #onSortTypeChange = (evt: Event) => {
-    const target = (evt.target as HTMLAnchorElement);
+    const target = evt.target as HTMLAnchorElement;
 
     const hasAttr = target.hasAttribute(SORT_DATA_ATTR);
 
@@ -47,7 +55,9 @@ class Sort extends AbstractView {
       return;
     }
 
-    this.callbacks.changeSortType(target.getAttribute(SORT_DATA_ATTR) as SortType);
+    this.callbacks.changeSortType(
+      target.getAttribute(SORT_DATA_ATTR) as SortType
+    );
   };
 
   public setOnSortTypeChange = (callback: ChangeSortTypeCb) => {

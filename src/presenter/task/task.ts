@@ -1,11 +1,22 @@
 import { replaceWithElement, renderElement, removeElement } from '~/helpers';
-import { KeyboardKey, RenderPosition } from '~/common/enums';
+import {
+  KeyboardKey,
+  RenderPosition,
+  UserAction,
+  UpdateType,
+} from '~/common/enums';
 import { BindingCb } from '~/common/types';
 import Abstract from '~/view/abstract/abstract';
 import TaskView from '~/view/task/task';
 import TaskEditView from '~/view/task-edit/task-edit';
 import { ITask } from '~/common/interfaces';
 import { TaskMode, ChangeTaskCb } from './common';
+
+type Constructor = {
+  containerComponent: Abstract,
+  changeTask: ChangeTaskCb,
+  changeMode: BindingCb
+};
 
 class Task {
   #taskListComponent: Abstract;
@@ -22,12 +33,8 @@ class Task {
 
   #taskEditComponent: TaskEditView | null;
 
-  constructor(
-    taskListNode: Abstract,
-    changeTask: ChangeTaskCb,
-    changeMode: BindingCb
-  ) {
-    this.#taskListComponent = taskListNode;
+  constructor({ containerComponent, changeTask, changeMode }: Constructor) {
+    this.#taskListComponent = containerComponent;
     this.#changeTask = changeTask;
     this.#changeMode = changeMode;
 
@@ -75,21 +82,21 @@ class Task {
   };
 
   #onFavoriteClick = () => {
-    this.#changeTask({
+    this.#changeTask(UserAction.UPDATE_TASK, UpdateType.MINOR, {
       ...this.#task,
       isFavorite: !this.#task.isFavorite,
     });
   };
 
   #onArchiveClick = () => {
-    this.#changeTask({
+    this.#changeTask(UserAction.UPDATE_TASK, UpdateType.MINOR, {
       ...this.#task,
       isArchive: !this.#task.isArchive,
     });
   };
 
   #onSubmit = (task: ITask) => {
-    this.#changeTask(task);
+    this.#changeTask(UserAction.UPDATE_TASK, UpdateType.MINOR, task);
     this.#replaceFormToCard();
   };
 

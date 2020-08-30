@@ -1,21 +1,25 @@
-import Abstract from '~/view/abstract/abstract';
+import { UpdateType } from '~/common/enums';
+import { BindingCbWithTwo } from '~/common/types';
+import { ITask } from '~/common/interfaces';
+
+type TaskObserverCb = BindingCbWithTwo<UpdateType, ITask>;
 
 class Observer {
-  #observers: Abstract[];
+  #observers: TaskObserverCb[];
 
   constructor() {
     this.#observers = [];
   }
 
-  #notify = (event, payload) => {
+  protected notify = (event: UpdateType, payload: ITask) => {
     this.#observers.forEach((observer) => observer(event, payload));
   };
 
-  public addObserver(observer: Abstract) {
+  public addObserver(observer: TaskObserverCb) {
     this.#observers.push(observer);
   }
 
-  public removeObserver(observer: Abstract) {
+  public removeObserver(observer: TaskObserverCb) {
     this.#observers = this.#observers.filter(
       (existedObserver) => existedObserver !== observer
     );
