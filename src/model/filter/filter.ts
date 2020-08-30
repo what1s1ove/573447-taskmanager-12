@@ -16,7 +16,7 @@ class Filter extends Observer<FilterType> {
     this.notify(type, filter);
   }
 
-  getFilter() {
+  get filter() {
     return this.#activeFilter;
   }
 }

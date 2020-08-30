@@ -28,7 +28,7 @@ class Filter extends AbstractView {
 
   get template() {
     const filterItemsTemplates = this.#filters.reduce((acc, it) => (acc.concat(
-      createFilterItemTemplate(it, it.name === this.#currentFilter)
+      createFilterItemTemplate(it, it.type === this.#currentFilter)
     )), ``);
 
     return `
