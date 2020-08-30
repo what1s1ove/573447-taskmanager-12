@@ -9,14 +9,17 @@ import {
   SortType,
   UserAction,
   UpdateType,
+  FilterType,
 } from '~/common/enums';
 import TaskPresenter from '~/presenter/task/task';
 import TaskModel from '~/model/task/task';
+import FilterModel from '~/model/filter/filter';
 import NoTaskView from '~/view/no-tasks/no-tasks';
 import BoardView from '~/view/board/board';
 import SortView from '~/view/sort/sort';
 import TaskListView from '~/view/task-list/task-list';
 import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
+import { filterToCbMap } from '~/common/maps';
 
 const TASK_COUNT_PER_STEP = 8;
 
@@ -24,13 +27,16 @@ const sorts = Object.values(SortType);
 
 type Constructor = {
   containerNode: Element,
-  tasksModel: TaskModel
+  tasksModel: TaskModel,
+  filterModel: FilterModel
 };
 
 class Board {
   #renderedTaskCount: number;
 
   #tasksModel: TaskModel;
+
+  #filterModel: FilterModel;
 
   #currentSortType: SortType;
 
@@ -48,8 +54,9 @@ class Board {
 
   #loadMoreButtonComponent: LoadMoreButtonView | null;
 
-  constructor({ containerNode, tasksModel }: Constructor) {
+  constructor({ containerNode, tasksModel, filterModel }: Constructor) {
     this.#tasksModel = tasksModel;
+    this.#filterModel = filterModel;
     this.#boardContainerNode = containerNode;
     this.#renderedTaskCount = TASK_COUNT_PER_STEP;
     this.#currentSortType = SortType.DEFAULT;
@@ -63,21 +70,26 @@ class Board {
     this.#taskListComponent = new TaskListView();
 
     this.#tasksModel.addObserver(this.#changeModelEvent);
+    this.#filterModel.addObserver(this.#changeModelEvent);
   }
 
   get tasks() {
+    const { tasks } = this.#tasksModel;
+    const filterType = this.#filterModel.filter;
+    const filteredTasks = filterToCbMap[filterType](tasks);
+    console.log(filterType, filteredTasks);
+
     switch (this.#currentSortType) {
       case SortType.DATE_UP:
       case SortType.DATE_DOWN:
-        this.#tasksModel.tasks.sort((a, b) => {
+        return filteredTasks.sort((a, b) => {
           const rank = getRankByType(a, b, this.#currentSortType);
 
           return rank;
         });
-        break;
     }
 
-    return this.#tasksModel.tasks;
+    return filteredTasks;
   }
 
   #renderNoTask = () => {
@@ -136,22 +148,27 @@ class Board {
     }
   };
 
-  #changeModelEvent = (updateType: UpdateType, task: ITask) => {
+  #changeModelEvent = (updateType: UpdateType, update: ITask | FilterType) => {
     switch (updateType) {
-      case UpdateType.PATCH:
+      case UpdateType.PATCH: {
+        const task = update as ITask;
+
         this.#taskPresenters[task.id].init(task);
         break;
-      case UpdateType.MINOR:
+      }
+      case UpdateType.MINOR: {
         this.#clearBoard();
         this.#renderBoard();
         break;
-      case UpdateType.MAJOR:
+      }
+      case UpdateType.MAJOR: {
         this.#clearBoard({
           isResetRenderedTaskCount: true,
           isResetSortType: true,
         });
         this.#renderBoard();
         break;
+      }
     }
   };
 

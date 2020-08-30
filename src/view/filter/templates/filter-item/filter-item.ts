@@ -10,6 +10,7 @@ const createFilterItemTemplate = (filter: IFilter, isChecked: boolean) => {
       id="filter__${type}"
       class="filter__input visually-hidden"
       name="filter"
+      value="${type}"
       ${isChecked ? `checked` : ``}
       ${isDisabled ? `disabled` : ``}
     />

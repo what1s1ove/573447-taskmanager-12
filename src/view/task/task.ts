@@ -42,12 +42,12 @@ class Task extends AbstractView {
       ? `card--repeat`
       : ``;
     const archiveClassName = isArchive
-      ? `card__btn--archive card__btn--disabled`
-      : `card__btn--archive`;
+      ? `card__btn--archive`
+      : `card__btn--archive card__btn--disabled`;
 
     const favoriteClassName = isFavorite
-      ? `card__btn--favorites card__btn--disabled`
-      : `card__btn--favorites`;
+      ? `card__btn--favorites`
+      : `card__btn--favorites card__btn--disabled`;
 
     return `
       <article class="card card--${color} ${deadlineClassName} ${repeatClassName}">
