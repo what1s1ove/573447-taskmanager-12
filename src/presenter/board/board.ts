@@ -12,6 +12,7 @@ import {
   FilterType,
 } from '~/common/enums';
 import TaskPresenter from '~/presenter/task/task';
+import NewTaskPresenter from '~/presenter/new-task/new-task';
 import TaskModel from '~/model/task/task';
 import FilterModel from '~/model/filter/filter';
 import NoTaskView from '~/view/no-tasks/no-tasks';
@@ -42,6 +43,8 @@ class Board {
 
   #taskPresenters: Record<number, TaskPresenter>;
 
+  #newTaskPresenter: NewTaskPresenter;
+
   #boardContainerNode: Element;
 
   #noTasksComponent: NoTaskView;
@@ -71,13 +74,17 @@ class Board {
 
     this.#tasksModel.addObserver(this.#changeModelEvent);
     this.#filterModel.addObserver(this.#changeModelEvent);
+
+    this.#newTaskPresenter = new NewTaskPresenter({
+      container: this.#taskListComponent,
+      changeTask: this.#changeViewAction
+    });
   }
 
   get tasks() {
     const { tasks } = this.#tasksModel;
     const filterType = this.#filterModel.filter;
     const filteredTasks = filterToCbMap[filterType](tasks);
-    console.log(filterType, filteredTasks);
 
     switch (this.#currentSortType) {
       case SortType.DATE_UP:
@@ -216,6 +223,8 @@ class Board {
   } = {}) => {
     const taskCount = this.tasks.length;
 
+    this.#newTaskPresenter.destroy();
+
     Object.values(this.#taskPresenters).forEach((it) => it.destroy());
     this.#taskPresenters = {};
 
@@ -262,8 +271,16 @@ class Board {
   };
 
   #changeTaskMode = () => {
+    this.#newTaskPresenter.destroy();
+
     Object.values(this.#taskPresenters).forEach((it) => it.resetView());
   };
+
+  public createTask() {
+    this.#currentSortType = SortType.DEFAULT;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
+    this.#newTaskPresenter.init();
+  }
 
   public init() {
     renderElement(

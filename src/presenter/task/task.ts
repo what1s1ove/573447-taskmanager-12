@@ -11,12 +11,12 @@ import {
   UserAction,
   UpdateType,
 } from '~/common/enums';
-import { BindingCb } from '~/common/types';
+import { BindingCb, ChangeTaskCb } from '~/common/types';
 import Abstract from '~/view/abstract/abstract';
 import TaskView from '~/view/task/task';
 import TaskEditView from '~/view/task-edit/task-edit';
 import { ITask } from '~/common/interfaces';
-import { TaskMode, ChangeTaskCb } from './common';
+import { TaskMode } from './common';
 
 type Constructor = {
   containerComponent: Abstract,
@@ -136,7 +136,9 @@ class Task {
     const prevTaskEditComponent = this.#taskEditComponent;
 
     this.#taskComponent = new TaskView(task);
-    this.#taskEditComponent = new TaskEditView(task);
+    this.#taskEditComponent = new TaskEditView({
+      task
+    });
 
     this.#initListeners();
 

@@ -12,6 +12,10 @@ import { createTaskEditColorsTemplate } from './templates/task-color/task-color'
 import { getRawTask, getClearTask } from './helpers';
 import { IRawTask, EMPTY_TASK } from './common';
 
+type Constructor = {
+  task: ITask | null
+};
+
 type CallBacks = {
   onSubmit: BindingCbWithOne<ITask>;
   onDelete: BindingCbWithOne<ITask>;
@@ -36,7 +40,7 @@ class TaskEdit extends Smart<IRawTask> {
     return clearTask;
   }
 
-  constructor(task: ITask | null) {
+  constructor({ task }: Constructor) {
     super();
     this.data = TaskEdit.parseTaskToData(task ?? EMPTY_TASK);
     this.#datepicker = null;
