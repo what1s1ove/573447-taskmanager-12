@@ -1,5 +1,5 @@
 import { TaskColor } from '~/common/enums';
-import { TaskDueDate } from '~/common/types';
+import { TaskDueDate } from '~/common/types/task/task-due-date.type';
 import { ITaskRepeating } from './task-repeating.interface';
 
 interface ITask {

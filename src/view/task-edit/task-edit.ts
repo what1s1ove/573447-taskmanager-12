@@ -1,3 +1,4 @@
+import he from 'he';
 import flatpickr from 'flatpickr';
 import { Instance } from 'flatpickr/dist/types/instance';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -78,7 +79,7 @@ class TaskEdit extends Smart<IRawTask> {
             </div>
             <div class="card__textarea-wrap">
               <label>
-                <textarea class="card__text" placeholder="Start typing your text here..." name="text">${description}</textarea>
+                <textarea class="card__text" placeholder="Start typing your text here..." name="text">${he.encode(description)}</textarea>
               </label>
             </div>
             <div class="card__settings">

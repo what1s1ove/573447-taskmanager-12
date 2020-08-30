@@ -10,6 +10,7 @@
     "test": "npm run eslint"
   },
   "devDependencies": {
+    "@types/he": "1.1.1",
     "@typescript-eslint/eslint-plugin": "3.7.1",
     "css-loader": "4.2.1",
     "eslint": "6.1.0",
@@ -28,6 +29,7 @@
   },
   "dependencies": {
     "flatpickr": "4.6.6",
+    "he": "1.2.0",
     "moment": "2.27.0"
   },
   "engines": {
