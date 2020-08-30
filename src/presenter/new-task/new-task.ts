@@ -6,7 +6,7 @@ import {
   UserAction,
   UpdateType,
 } from '~/common/enums';
-import { ChangeTaskCb } from '~/common/types';
+import { ChangeTaskCb, BindingCb } from '~/common/types';
 import Abstract from '~/view/abstract/abstract';
 import TaskEditView from '~/view/task-edit/task-edit';
 
@@ -22,11 +22,14 @@ class NewTask {
 
   #taskEditComponent: TaskEditView | null;
 
+  #destroyCallback: BindingCb | null;
+
   constructor({ container, changeTask }: Constructor) {
     this.#taskListContainer = container;
     this.#changeTask = changeTask;
 
     this.#taskEditComponent = null;
+    this.#destroyCallback = null;
   }
 
   #submitForm = (task: ITask) => {
@@ -58,10 +61,16 @@ class NewTask {
     removeElement(this.#taskEditComponent);
     this.#taskEditComponent = null;
 
+    if (this.#destroyCallback) {
+      this.#destroyCallback();
+    }
+
     document.removeEventListener(`keydown`, this.#onEscKeyDown);
   }
 
-  public init() {
+  public init(callback: BindingCb) {
+    this.#destroyCallback = callback;
+
     if (this.#taskEditComponent) {
       return;
     }

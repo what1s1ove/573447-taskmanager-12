@@ -21,6 +21,7 @@ import SortView from '~/view/sort/sort';
 import TaskListView from '~/view/task-list/task-list';
 import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
 import { filterToCbMap } from '~/common/maps';
+import { BindingCb } from '~/common/types';
 
 const TASK_COUNT_PER_STEP = 8;
 
@@ -71,9 +72,6 @@ class Board {
     this.#noTasksComponent = new NoTaskView();
     this.#boardComponent = new BoardView();
     this.#taskListComponent = new TaskListView();
-
-    this.#tasksModel.addObserver(this.#changeModelEvent);
-    this.#filterModel.addObserver(this.#changeModelEvent);
 
     this.#newTaskPresenter = new NewTaskPresenter({
       container: this.#taskListComponent,
@@ -276,10 +274,21 @@ class Board {
     Object.values(this.#taskPresenters).forEach((it) => it.resetView());
   };
 
-  public createTask() {
-    this.#currentSortType = SortType.DEFAULT;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
-    this.#newTaskPresenter.init();
+  public createTask(callback: BindingCb) {
+    this.#newTaskPresenter.init(callback);
+  }
+
+  public destroy() {
+    this.#clearBoard({
+      isResetRenderedTaskCount: true,
+      isResetSortType: true
+    });
+
+    removeElement(this.#taskListComponent);
+    removeElement(this.#boardComponent);
+
+    this.#tasksModel.removeObserver(this.#changeModelEvent);
+    this.#filterModel.removeObserver(this.#changeModelEvent);
   }
 
   public init() {
@@ -293,6 +302,9 @@ class Board {
       this.#taskListComponent,
       RenderPosition.BEFORE_END
     );
+
+    this.#tasksModel.addObserver(this.#changeModelEvent);
+    this.#filterModel.addObserver(this.#changeModelEvent);
 
     this.#renderBoard();
   }
