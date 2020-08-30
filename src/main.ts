@@ -1,4 +1,4 @@
-import { generateTasks, renderElement } from '~/helpers';
+import { generateTasks, renderElement, removeElement } from '~/helpers';
 import {
   RenderPosition,
   MenuItem,
@@ -10,6 +10,7 @@ import FilterPresenter from '~/presenter/filter/filter';
 import TasksModel from '~/model/task/task';
 import FilterModel from '~/model/filter/filter';
 import SiteMenuView from '~/view/site-menu/site-menu';
+import StatisticsView from '~/view/statistics/statistics';
 
 const TASK_COUNT = 22;
 
@@ -38,34 +39,44 @@ const boardPresenter = new BoardPresenter({
 });
 
 const closeNewTaskForm = () => {
-  const tasksInputNode = siteMenuComponent.node.querySelector(
+  const tasksInputNode: HTMLInputElement = siteMenuComponent.node.querySelector(
     `[value=${MenuItem.TASKS}]`
   );
 
-  (tasksInputNode as HTMLInputElement).disabled = false;
+  tasksInputNode.disabled = false;
   siteMenuComponent.setMenuItem(MenuItem.TASKS);
 };
+
+let statisticsComponent: StatisticsView | null = null;
 
 const changeMenuItem = (menuItem: MenuItem) => {
   switch (menuItem) {
     case MenuItem.ADD_NEW_TASK: {
-      const tasksInputNode = siteMenuComponent.node.querySelector(
+      const tasksInputNode: HTMLInputElement = siteMenuComponent.node.querySelector(
         `[value=${MenuItem.TASKS}]`
       );
 
+      removeElement(statisticsComponent);
       boardPresenter.destroy();
       filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
       boardPresenter.init();
       boardPresenter.createTask(closeNewTaskForm);
-      (tasksInputNode as HTMLInputElement).disabled = true;
+      tasksInputNode.disabled = true;
       break;
     }
-    case MenuItem.TASKS:
+    case MenuItem.TASKS: {
       boardPresenter.init();
+      removeElement(statisticsComponent);
       break;
-    case MenuItem.STATISTICS:
+    }
+    case MenuItem.STATISTICS: {
       boardPresenter.destroy();
+      statisticsComponent = new StatisticsView({
+        tasks: tasksModel.tasks
+      });
+      renderElement(siteMainNode, statisticsComponent, RenderPosition.BEFORE_END);
       break;
+    }
   }
 };
 

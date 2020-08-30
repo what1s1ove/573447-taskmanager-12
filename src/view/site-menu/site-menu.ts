@@ -58,11 +58,9 @@ class SiteMenu extends AbstractView {
   }
 
   public setMenuItem(menuItem: MenuItem) {
-    const inputNode = this.node.querySelector(`[value=${menuItem}]`);
+    const inputNode: HTMLInputElement = this.node.querySelector(`[value=${menuItem}]`);
 
-    if (inputNode) {
-      (inputNode as HTMLInputElement).checked = true;
-    }
+    inputNode.checked = true;
   }
 }
 
