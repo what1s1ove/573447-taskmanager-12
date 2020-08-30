@@ -7,6 +7,7 @@ import {
 import { ITask } from '~/common/interfaces';
 import { RenderPosition, SortType } from '~/common/enums';
 import TaskPresenter from '~/presenter/task/task';
+import TaskModel from '~/model/task/task';
 import NoTaskView from '~/view/no-tasks/no-tasks';
 import BoardView from '~/view/board/board';
 import SortView from '~/view/sort/sort';
@@ -18,12 +19,19 @@ const TASK_COUNT_PER_STEP = 8;
 
 const sorts = Object.values(SortType);
 
+type Constructor = {
+  containerNode: Element,
+  tasksModel: TaskModel
+};
+
 class Board {
   #boardTasks: ITask[];
 
   #initialTasks: ITask[];
 
   #renderedTaskCount: number;
+
+  #tasksModel: TaskModel;
 
   #currentSortType: SortType;
 
@@ -41,8 +49,9 @@ class Board {
 
   #loadMoreButtonComponent: LoadMoreButtonView;
 
-  constructor(boardContainerNode: Element) {
-    this.#boardContainerNode = boardContainerNode;
+  constructor({ containerNode, tasksModel }: Constructor) {
+    this.#tasksModel = tasksModel;
+    this.#boardContainerNode = containerNode;
     this.#renderedTaskCount = TASK_COUNT_PER_STEP;
     this.#currentSortType = SortType.DEFAULT;
     this.#taskPresenters = {};
@@ -55,7 +64,11 @@ class Board {
   }
 
   #renderNoTask = () => {
-    renderElement(this.#boardComponent, this.#noTasksComponent, RenderPosition.AFTER_BEGIN);
+    renderElement(
+      this.#boardComponent,
+      this.#noTasksComponent,
+      RenderPosition.AFTER_BEGIN
+    );
   };
 
   #renderSorts = () => {
@@ -88,6 +101,10 @@ class Board {
 
   #renderTasks = (from: number, to: number) => {
     this.#boardTasks.slice(from, to).forEach((it) => this.#renderTask(it));
+  };
+
+  #getTasks = () => {
+    return this.#tasksModel.getTasks();
   };
 
   #clearTaskList = () => {
@@ -127,7 +144,11 @@ class Board {
   };
 
   #renderLoadMoreButton = () => {
-    renderElement(this.#boardComponent, this.#loadMoreButtonComponent, RenderPosition.BEFORE_END);
+    renderElement(
+      this.#boardComponent,
+      this.#loadMoreButtonComponent,
+      RenderPosition.BEFORE_END
+    );
 
     this.#loadMoreButtonComponent.setOnClick(this.#loadMoreTasks);
   };
@@ -148,7 +169,10 @@ class Board {
   };
 
   #loadMoreTasks = () => {
-    this.#renderTasks(this.#renderedTaskCount, this.#renderedTaskCount + TASK_COUNT_PER_STEP);
+    this.#renderTasks(
+      this.#renderedTaskCount,
+      this.#renderedTaskCount + TASK_COUNT_PER_STEP
+    );
 
     this.#renderedTaskCount += TASK_COUNT_PER_STEP;
 
