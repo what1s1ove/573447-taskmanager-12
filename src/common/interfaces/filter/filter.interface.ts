@@ -1,7 +1,7 @@
 import { FilterType } from '~/common/enums';
 
 interface IFilter {
-  name: FilterType;
+  type: FilterType;
   count: number;
 }
 

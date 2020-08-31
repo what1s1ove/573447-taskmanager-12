@@ -1,11 +1,28 @@
-import { replaceWithElement, renderElement, removeElement } from '~/helpers';
-import { KeyboardKey, RenderPosition } from '~/common/enums';
-import { BindingCb } from '~/common/types';
+import {
+  replaceWithElement,
+  renderElement,
+  removeElement,
+  checkIsTaskRepeating,
+  checkIsDatesEqual,
+} from '~/helpers';
+import {
+  KeyboardKey,
+  RenderPosition,
+  UserAction,
+  UpdateType,
+} from '~/common/enums';
+import { BindingCb, ChangeTaskCb } from '~/common/types';
 import Abstract from '~/view/abstract/abstract';
 import TaskView from '~/view/task/task';
 import TaskEditView from '~/view/task-edit/task-edit';
 import { ITask } from '~/common/interfaces';
-import { TaskMode, ChangeTaskCb } from './common';
+import { TaskMode } from './common';
+
+type Constructor = {
+  containerComponent: Abstract,
+  changeTask: ChangeTaskCb,
+  changeMode: BindingCb
+};
 
 class Task {
   #taskListComponent: Abstract;
@@ -22,12 +39,8 @@ class Task {
 
   #taskEditComponent: TaskEditView | null;
 
-  constructor(
-    taskListNode: Abstract,
-    changeTask: ChangeTaskCb,
-    changeMode: BindingCb
-  ) {
-    this.#taskListComponent = taskListNode;
+  constructor({ containerComponent, changeTask, changeMode }: Constructor) {
+    this.#taskListComponent = containerComponent;
     this.#changeTask = changeTask;
     this.#changeMode = changeMode;
 
@@ -39,9 +52,10 @@ class Task {
 
   #initListeners = () => {
     this.#taskComponent.setOnEditClick(this.#onEditClick);
-    this.#taskComponent.setOnFavoriteClick(this.#onFavoriteClick);
-    this.#taskComponent.setOnArchiveClick(this.#onArchiveClick);
-    this.#taskEditComponent.setOnSubmit(this.#onSubmit);
+    this.#taskComponent.setOnFavoriteClick(this.#favoriteTask);
+    this.#taskComponent.setOnArchiveClick(this.#archiveTask);
+    this.#taskEditComponent.setOnSubmit(this.#submitForm);
+    this.#taskEditComponent.setOnDeleteClick(this.#deleteTask);
   };
 
   #replaceCardToForm = () => {
@@ -74,23 +88,34 @@ class Task {
     this.#replaceCardToForm();
   };
 
-  #onFavoriteClick = () => {
-    this.#changeTask({
+  #favoriteTask = () => {
+    this.#changeTask(UserAction.UPDATE_TASK, UpdateType.MINOR, {
       ...this.#task,
       isFavorite: !this.#task.isFavorite,
     });
   };
 
-  #onArchiveClick = () => {
-    this.#changeTask({
+  #archiveTask = () => {
+    this.#changeTask(UserAction.UPDATE_TASK, UpdateType.MINOR, {
       ...this.#task,
       isArchive: !this.#task.isArchive,
     });
   };
 
-  #onSubmit = (task: ITask) => {
-    this.#changeTask(task);
+  #submitForm = (task: ITask) => {
+    const isMinorUpdate = !checkIsDatesEqual(this.#task.dueDate, task.dueDate)
+      || checkIsTaskRepeating(this.#task.repeating) !== checkIsTaskRepeating(task.repeating);
+
+    this.#changeTask(
+      UserAction.UPDATE_TASK,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      task
+    );
     this.#replaceFormToCard();
+  };
+
+  #deleteTask = (task: ITask) => {
+    this.#changeTask(UserAction.DELETE_TASK, UpdateType.MINOR, task);
   };
 
   public resetView = () => {
@@ -111,7 +136,9 @@ class Task {
     const prevTaskEditComponent = this.#taskEditComponent;
 
     this.#taskComponent = new TaskView(task);
-    this.#taskEditComponent = new TaskEditView(task);
+    this.#taskEditComponent = new TaskEditView({
+      task
+    });
 
     this.#initListeners();
 

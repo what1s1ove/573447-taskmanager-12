@@ -10,6 +10,8 @@
     "test": "npm run eslint"
   },
   "devDependencies": {
+    "@types/chart.js": "2.9.24",
+    "@types/he": "1.1.1",
     "@typescript-eslint/eslint-plugin": "3.7.1",
     "css-loader": "4.2.1",
     "eslint": "6.1.0",
@@ -27,7 +29,10 @@
     "webpack-dev-server": "3.11.0"
   },
   "dependencies": {
+    "chart.js": "2.9.3",
+    "chartjs-plugin-datalabels": "0.7.0",
     "flatpickr": "4.6.6",
+    "he": "1.2.0",
     "moment": "2.27.0"
   },
   "engines": {

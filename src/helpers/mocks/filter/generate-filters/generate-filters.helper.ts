@@ -21,7 +21,7 @@ const taskToFilterMap = {
 const generateFilters = (tasks: ITask[]): IFilter[] => {
   const filters = Object.entries(taskToFilterMap).map(
     ([filterName, countTasks]) => ({
-      name: filterName as FilterType,
+      type: filterName as FilterType,
       count: countTasks(tasks),
     })
   );

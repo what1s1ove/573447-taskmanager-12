@@ -25,7 +25,7 @@ class LoadMoreButton extends AbstractView {
   public setOnClick = (callback: BindingCb) => {
     this.callbacks.onClick = callback;
 
-    this.element.addEventListener(`click`, this.#onClick);
+    this.node.addEventListener(`click`, this.#onClick);
   };
 }
 

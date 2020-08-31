@@ -1,3 +1,4 @@
+import he from 'he';
 import flatpickr from 'flatpickr';
 import { Instance } from 'flatpickr/dist/types/instance';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -12,8 +13,13 @@ import { createTaskEditColorsTemplate } from './templates/task-color/task-color'
 import { getRawTask, getClearTask } from './helpers';
 import { IRawTask, EMPTY_TASK } from './common';
 
+type Constructor = {
+  task: ITask | null
+};
+
 type CallBacks = {
   onSubmit: BindingCbWithOne<ITask>;
+  onDelete: BindingCbWithOne<ITask>;
 };
 
 class TaskEdit extends Smart<IRawTask> {
@@ -35,7 +41,7 @@ class TaskEdit extends Smart<IRawTask> {
     return clearTask;
   }
 
-  constructor(task: ITask | null) {
+  constructor({ task }: Constructor) {
     super();
     this.data = TaskEdit.parseTaskToData(task ?? EMPTY_TASK);
     this.#datepicker = null;
@@ -73,7 +79,7 @@ class TaskEdit extends Smart<IRawTask> {
             </div>
             <div class="card__textarea-wrap">
               <label>
-                <textarea class="card__text" placeholder="Start typing your text here..." name="text">${description}</textarea>
+                <textarea class="card__text" placeholder="Start typing your text here..." name="text">${he.encode(description)}</textarea>
               </label>
             </div>
             <div class="card__settings">
@@ -180,6 +186,19 @@ class TaskEdit extends Smart<IRawTask> {
     this.callbacks.onSubmit(TaskEdit.parseDataToTask(this.data));
   };
 
+  #onDelete = () => {
+    this.callbacks.onDelete(TaskEdit.parseDataToTask(this.data));
+  };
+
+  public removeElement() {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
+  }
+
   public resetTask = (task: ITask) => {
     this.updateData(TaskEdit.parseDataToTask(task));
   };
@@ -190,6 +209,14 @@ class TaskEdit extends Smart<IRawTask> {
     const formNode = this.node.querySelector(`.card__form`);
 
     formNode.addEventListener(`submit`, this.#onSubmit);
+  }
+
+  public setOnDeleteClick(callback: BindingCbWithOne<ITask>) {
+    this.callbacks.onDelete = callback;
+
+    const deleteBtnNode = this.node.querySelector(`.card__delete`);
+
+    deleteBtnNode.addEventListener(`click`, this.#onDelete);
   }
 
   initListeners = () => {

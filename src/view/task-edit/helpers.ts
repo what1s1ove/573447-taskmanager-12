@@ -4,20 +4,13 @@ import { TASK_DEFAULT_REPEATING } from '~/common/constants';
 import { IRawTask } from './common';
 
 const getClearTask = (task: IRawTask): ITask => {
-  const parsedTask = { ...task };
+  const { isDueDate, isRepeating, ...rest } = task;
 
-  if (!parsedTask.isDueDate) {
-    parsedTask.dueDate = null;
-  }
-
-  if (!parsedTask.isRepeating) {
-    parsedTask.repeating = TASK_DEFAULT_REPEATING;
-  }
-
-  delete parsedTask.isDueDate;
-  delete parsedTask.isRepeating;
-
-  return parsedTask;
+  return {
+    ...rest,
+    dueDate: isDueDate ? rest.dueDate : null,
+    repeating: isRepeating ? rest.repeating : TASK_DEFAULT_REPEATING,
+  };
 };
 
 const getRawTask = (task: ITask): IRawTask => {
