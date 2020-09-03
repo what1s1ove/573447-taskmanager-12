@@ -20,6 +20,7 @@ import BoardView from '~/view/board/board';
 import SortView from '~/view/sort/sort';
 import TaskListView from '~/view/task-list/task-list';
 import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
+import LoadingView from '~/view/loading/loading';
 import { filterToCbMap } from '~/common/maps';
 import { BindingCb } from '~/common/types';
 
@@ -46,6 +47,8 @@ class Board {
 
   #newTaskPresenter: NewTaskPresenter;
 
+  #isLoading: boolean;
+
   #boardContainerNode: Element;
 
   #noTasksComponent: NoTaskView;
@@ -58,6 +61,8 @@ class Board {
 
   #loadMoreButtonComponent: LoadMoreButtonView | null;
 
+  #loadingComponent: LoadingView;
+
   constructor({ containerNode, tasksModel, filterModel }: Constructor) {
     this.#tasksModel = tasksModel;
     this.#filterModel = filterModel;
@@ -65,6 +70,7 @@ class Board {
     this.#renderedTaskCount = TASK_COUNT_PER_STEP;
     this.#currentSortType = SortType.DEFAULT;
     this.#taskPresenters = {};
+    this.#isLoading = true;
 
     this.#sortComponent = null;
     this.#loadMoreButtonComponent = null;
@@ -72,6 +78,7 @@ class Board {
     this.#noTasksComponent = new NoTaskView();
     this.#boardComponent = new BoardView();
     this.#taskListComponent = new TaskListView();
+    this.#loadingComponent = new LoadingView();
 
     this.#newTaskPresenter = new NewTaskPresenter({
       container: this.#taskListComponent,
@@ -105,6 +112,14 @@ class Board {
     );
   };
 
+  #renderLoading = () => {
+    renderElement(
+      this.#boardComponent,
+      this.#loadingComponent,
+      RenderPosition.AFTER_BEGIN
+    );
+  };
+
   #renderSorts = () => {
     if (!this.#sortComponent) {
       this.#sortComponent = null;
@@ -133,6 +148,75 @@ class Board {
     taskPresenter.init(task);
 
     this.#taskPresenters[task.id] = taskPresenter;
+  };
+
+  #renderTasks = (tasks: ITask[]) => {
+    tasks.forEach((it) => this.#renderTask(it));
+  };
+
+  #renderLoadMoreButton = () => {
+    if (this.#loadMoreButtonComponent !== null) {
+      this.#loadMoreButtonComponent = null;
+    }
+
+    this.#loadMoreButtonComponent = new LoadMoreButtonView();
+    this.#loadMoreButtonComponent.setOnClick(this.#loadMoreTasks);
+
+    renderElement(
+      this.#boardComponent,
+      this.#loadMoreButtonComponent,
+      RenderPosition.BEFORE_END
+    );
+  };
+
+  #renderBoard = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+
+      return;
+    }
+
+    const taskCount = this.tasks.length;
+
+    if (!taskCount) {
+      this.#renderNoTask();
+
+      return;
+    }
+
+    this.#renderSorts();
+    this.#renderTasks(
+      this.tasks.slice(0, Math.min(taskCount, this.#renderedTaskCount))
+    );
+
+    if (taskCount > this.#renderedTaskCount) {
+      this.#renderLoadMoreButton();
+    }
+  };
+
+  #clearBoard = ({
+    isResetRenderedTaskCount = false,
+    isResetSortType = false,
+  } = {}) => {
+    const taskCount = this.tasks.length;
+
+    this.#newTaskPresenter.destroy();
+
+    Object.values(this.#taskPresenters).forEach((it) => it.destroy());
+    this.#taskPresenters = {};
+
+    removeElement(this.#sortComponent);
+    removeElement(this.#noTasksComponent);
+    removeElement(this.#loadMoreButtonComponent);
+    removeElement(this.#loadingComponent);
+
+    this.#renderedTaskCount = isResetRenderedTaskCount
+      ? TASK_COUNT_PER_STEP
+      : Math.min(taskCount, this.#renderedTaskCount);
+
+    if (isResetSortType) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
   };
 
   #changeViewAction = (
@@ -174,68 +258,12 @@ class Board {
         this.#renderBoard();
         break;
       }
-    }
-  };
-
-  #renderTasks = (tasks: ITask[]) => {
-    tasks.forEach((it) => this.#renderTask(it));
-  };
-
-  #renderLoadMoreButton = () => {
-    if (this.#loadMoreButtonComponent !== null) {
-      this.#loadMoreButtonComponent = null;
-    }
-
-    this.#loadMoreButtonComponent = new LoadMoreButtonView();
-    this.#loadMoreButtonComponent.setOnClick(this.#loadMoreTasks);
-
-    renderElement(
-      this.#boardComponent,
-      this.#loadMoreButtonComponent,
-      RenderPosition.BEFORE_END
-    );
-  };
-
-  #renderBoard = () => {
-    const taskCount = this.tasks.length;
-
-    if (!taskCount) {
-      this.#renderNoTask();
-
-      return;
-    }
-
-    this.#renderSorts();
-    this.#renderTasks(
-      this.tasks.slice(0, Math.min(taskCount, this.#renderedTaskCount))
-    );
-
-    if (taskCount > this.#renderedTaskCount) {
-      this.#renderLoadMoreButton();
-    }
-  };
-
-  #clearBoard = ({
-    isResetRenderedTaskCount = false,
-    isResetSortType = false,
-  } = {}) => {
-    const taskCount = this.tasks.length;
-
-    this.#newTaskPresenter.destroy();
-
-    Object.values(this.#taskPresenters).forEach((it) => it.destroy());
-    this.#taskPresenters = {};
-
-    removeElement(this.#sortComponent);
-    removeElement(this.#noTasksComponent);
-    removeElement(this.#loadMoreButtonComponent);
-
-    this.#renderedTaskCount = isResetRenderedTaskCount
-      ? TASK_COUNT_PER_STEP
-      : Math.min(taskCount, this.#renderedTaskCount);
-
-    if (isResetSortType) {
-      this.#currentSortType = SortType.DEFAULT;
+      case UpdateType.INIT: {
+        this.#isLoading = false;
+        removeElement(this.#loadingComponent);
+        this.#renderBoard();
+        break;
+      }
     }
   };
 
