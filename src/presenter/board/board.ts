@@ -1,3 +1,4 @@
+import { Api } from '~/services';
 import {
   renderElement,
   removeElement,
@@ -32,6 +33,7 @@ type Constructor = {
   containerNode: Element,
   tasksModel: TaskModel,
   filterModel: FilterModel
+  api: Api
 };
 
 class Board {
@@ -49,6 +51,8 @@ class Board {
 
   #isLoading: boolean;
 
+  #api: Api;
+
   #boardContainerNode: Element;
 
   #noTasksComponent: NoTaskView;
@@ -63,7 +67,12 @@ class Board {
 
   #loadingComponent: LoadingView;
 
-  constructor({ containerNode, tasksModel, filterModel }: Constructor) {
+  constructor({
+    containerNode,
+    tasksModel,
+    filterModel,
+    api
+  }: Constructor) {
     this.#tasksModel = tasksModel;
     this.#filterModel = filterModel;
     this.#boardContainerNode = containerNode;
@@ -71,6 +80,7 @@ class Board {
     this.#currentSortType = SortType.DEFAULT;
     this.#taskPresenters = {};
     this.#isLoading = true;
+    this.#api = api;
 
     this.#sortComponent = null;
     this.#loadMoreButtonComponent = null;
@@ -82,7 +92,7 @@ class Board {
 
     this.#newTaskPresenter = new NewTaskPresenter({
       container: this.#taskListComponent,
-      changeTask: this.#changeViewAction
+      changeTask: this.#changeViewAction,
     });
   }
 
@@ -226,7 +236,9 @@ class Board {
   ) => {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this.#tasksModel.updateTask(updateType, task);
+        this.#api.updateTask(task).then((it) => {
+          this.#tasksModel.updateTask(updateType, it);
+        });
         break;
       case UserAction.ADD_TASK:
         this.#tasksModel.addTasks(updateType, task);
@@ -309,7 +321,7 @@ class Board {
   public destroy() {
     this.#clearBoard({
       isResetRenderedTaskCount: true,
-      isResetSortType: true
+      isResetSortType: true,
     });
 
     removeElement(this.#taskListComponent);
