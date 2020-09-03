@@ -1,5 +1,4 @@
 import { renderElement, removeElement } from '~/helpers';
-import { ITask } from '~/common/interfaces';
 import {
   RenderPosition,
   KeyboardKey,
@@ -34,8 +33,6 @@ class NewTask {
 
   #submitForm = (task: INewTask) => {
     this.#changeTask(UserAction.ADD_TASK, UpdateType.MINOR, task);
-
-    this.destroy();
   };
 
   #deleteTask = () => {
@@ -49,6 +46,25 @@ class NewTask {
       this.destroy();
     }
   };
+
+  public setSaving() {
+    this.#taskEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#taskEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this.#taskEditComponent.shake(resetFormState);
+  }
 
   public destroy() {
     if (!this.#taskEditComponent) {

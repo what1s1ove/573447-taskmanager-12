@@ -3,8 +3,8 @@ import Abstract from '~/view/abstract/abstract';
 import { RenderPosition } from '~/common/enums';
 
 const renderElement = (
-  container: Element | Abstract,
-  child: Element | Abstract,
+  container: HTMLElement | Abstract,
+  child: HTMLElement | Abstract,
   place: RenderPosition
 ) => {
   if (container instanceof Abstract) {

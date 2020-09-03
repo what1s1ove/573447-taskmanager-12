@@ -1,8 +1,8 @@
-const createElement = (template: string) => {
+const createElement = (template: string): HTMLElement => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
 
-  return newElement.firstElementChild;
+  return newElement.firstElementChild as HTMLElement;
 };
 
 export { createElement };

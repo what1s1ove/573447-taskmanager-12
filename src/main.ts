@@ -16,8 +16,8 @@ import StatisticsView from '~/view/statistics/statistics';
 const AUTHORIZATION = `Basic 1488`;
 const END_POINT = `https://12.ecmascript.pages.academy/task-manager`;
 
-const siteMainNode = document.querySelector(`.main`);
-const siteHeaderNode = siteMainNode.querySelector(`.main__control`);
+const siteMainNode = document.querySelector(`.main`) as HTMLElement;
+const siteHeaderNode = siteMainNode.querySelector(`.main__control`) as HTMLElement;
 
 const api = new Api(END_POINT, AUTHORIZATION);
 

@@ -10,6 +10,7 @@ import {
   RenderPosition,
   UserAction,
   UpdateType,
+  TaskState
 } from '~/common/enums';
 import { BindingCb, ChangeTaskCb, INewTask } from '~/common/types';
 import Abstract from '~/view/abstract/abstract';
@@ -111,11 +112,39 @@ class Task {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       task
     );
-    this.#replaceFormToCard();
   };
 
   #deleteTask = (task: ITask) => {
     this.#changeTask(UserAction.DELETE_TASK, UpdateType.MINOR, task);
+  };
+
+  public setViewState = (state: TaskState) => {
+    const resetFormState = () => {
+      this.#taskEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    switch (state) {
+      case TaskState.SAVING:
+        this.#taskEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case TaskState.DELETING:
+        this.#taskEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case TaskState.ABORTING:
+        this.#taskComponent.shake(resetFormState);
+        this.#taskEditComponent.shake(resetFormState);
+        break;
+    }
   };
 
   public resetView = () => {
@@ -157,7 +186,8 @@ class Task {
         replaceWithElement(prevTaskComponent, this.#taskComponent);
         break;
       case TaskMode.EDIT:
-        replaceWithElement(prevTaskEditComponent, this.#taskEditComponent);
+        replaceWithElement(prevTaskEditComponent, this.#taskComponent);
+        this.#taskMode = TaskMode.PREVIEW;
         break;
     }
 

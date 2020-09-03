@@ -35,7 +35,7 @@ class TaskEdit extends Smart<IRawTask> {
     return rawTask;
   }
 
-  static parseDataToTask(rawTask: ITask | INewTask) {
+  static parseDataToTask(rawTask: IRawTask) {
     const clearTask = getClearTask(rawTask);
 
     return clearTask;
@@ -57,10 +57,13 @@ class TaskEdit extends Smart<IRawTask> {
       repeating,
       isDueDate,
       isRepeating,
+      isDisabled,
+      isSaving,
+      isDeleting,
     } = this.data;
 
     const dateTemplate = createTaskEditDateTemplate(dueDate, isDueDate);
-    const repeatingTemplate = createTaskEditRepeatingTemplate(repeating, isRepeating);
+    const repeatingTemplate = createTaskEditRepeatingTemplate(repeating, isRepeating, isDisabled);
     const colorsTemplate = createTaskEditColorsTemplate(color);
 
     const repeatingClassName = isRepeating ? `card--repeat` : ``;
@@ -79,7 +82,11 @@ class TaskEdit extends Smart<IRawTask> {
             </div>
             <div class="card__textarea-wrap">
               <label>
-                <textarea class="card__text" placeholder="Start typing your text here..." name="text">${he.encode(description)}</textarea>
+                <textarea
+                  ${isDisabled ? `disabled` : ``}
+                  class="card__text"
+                  placeholder="Start typing your text here..."
+                  name="text">${he.encode(description)}</textarea>
               </label>
             </div>
             <div class="card__settings">
@@ -98,13 +105,18 @@ class TaskEdit extends Smart<IRawTask> {
             </div>
             <div class="card__status-btns">
               <button
-                ${isFormDisabled ? `disabled` : ``}
+                ${isFormDisabled || isSaving ? `disabled` : ``}
                 class="card__save"
                 type="submit"
                 >
-                  save
+                ${isSaving ? `saving...` : `save`}
               </button>
-              <button class="card__delete" type="button">delete</button>
+              <button
+                ${isDisabled ? `disabled` : ``}
+                class="card__delete" type="button"
+              >
+                ${isDeleting ? `deleting...` : `delete`}
+              </button>
             </div>
           </div>
         </form>
@@ -200,7 +212,7 @@ class TaskEdit extends Smart<IRawTask> {
   }
 
   public resetTask = (task: ITask) => {
-    this.updateData(TaskEdit.parseDataToTask(task));
+    this.updateData(TaskEdit.parseTaskToData(task));
   };
 
   public setOnSubmit(callback: BindingCbWithOne<ITask | INewTask>) {
@@ -237,6 +249,7 @@ class TaskEdit extends Smart<IRawTask> {
     }
 
     this.setOnSubmit(this.callbacks.onSubmit);
+    this.setOnDeleteClick(this.callbacks.onDelete);
     this.#setDatepicker();
   };
 }

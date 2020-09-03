@@ -9,13 +9,13 @@ import { renderElement, removeElement, replaceWithElement } from '~/helpers';
 const filters = Object.values(FilterType);
 
 type Constructor = {
-  containerNode: Element;
+  containerNode: HTMLElement;
   filterModel: FilterModel;
   tasksModel: TaskModel;
 };
 
 class Filter {
-  #filterContainer: Element;
+  #filterContainer: HTMLElement;
 
   #filterModel: FilterModel;
 

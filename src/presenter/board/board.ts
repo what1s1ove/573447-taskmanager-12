@@ -11,6 +11,7 @@ import {
   UserAction,
   UpdateType,
   FilterType,
+  TaskState as TaskPresenterViewState,
 } from '~/common/enums';
 import TaskPresenter from '~/presenter/task/task';
 import NewTaskPresenter from '~/presenter/new-task/new-task';
@@ -30,7 +31,7 @@ const TASK_COUNT_PER_STEP = 8;
 const sorts = Object.values(SortType);
 
 type Constructor = {
-  containerNode: Element,
+  containerNode: HTMLElement,
   tasksModel: TaskModel,
   filterModel: FilterModel
   api: Api
@@ -53,7 +54,7 @@ class Board {
 
   #api: Api;
 
-  #boardContainerNode: Element;
+  #boardContainerNode: HTMLElement;
 
   #noTasksComponent: NoTaskView;
 
@@ -232,24 +233,60 @@ class Board {
   #changeViewAction = (
     actionType: UserAction,
     updateType: UpdateType,
-    task: ITask | INewTask
+    update: ITask | INewTask
   ) => {
     switch (actionType) {
-      case UserAction.UPDATE_TASK:
-        this.#api.updateTask(task as ITask).then((it) => {
-          this.#tasksModel.updateTask(updateType, it);
-        });
+      case UserAction.UPDATE_TASK: {
+        const task = update as ITask;
+
+        this.#taskPresenters[task.id].setViewState(TaskPresenterViewState.SAVING);
+        this.#api
+          .updateTask(task)
+          .then((it) => {
+            this.#tasksModel.updateTask(updateType, it);
+          })
+          .catch(() => {
+            this.#taskPresenters[task.id].setViewState(
+              TaskPresenterViewState.ABORTING
+            );
+          });
+
         break;
-      case UserAction.ADD_TASK:
-        this.#api.addTask(task as INewTask).then((it) => {
-          this.#tasksModel.addTasks(updateType, it);
-        });
+      }
+      case UserAction.ADD_TASK: {
+        const task = update as INewTask;
+
+        this.#newTaskPresenter.setSaving();
+        this.#api
+          .addTask(task)
+          .then((it) => {
+            this.#tasksModel.addTasks(updateType, it);
+          })
+          .catch(() => {
+            this.#newTaskPresenter.setAborting();
+          });
+
         break;
-      case UserAction.DELETE_TASK:
-        this.#api.deleteTask(task as ITask).then(() => {
-          this.#tasksModel.deleteTasks(updateType, task as ITask);
-        });
+      }
+      case UserAction.DELETE_TASK: {
+        const task = update as ITask;
+
+        this.#taskPresenters[task.id].setViewState(
+          TaskPresenterViewState.DELETING
+        );
+        this.#api
+          .deleteTask(task)
+          .then(() => {
+            this.#tasksModel.deleteTasks(updateType, task);
+          })
+          .catch(() => {
+            this.#taskPresenters[task.id].setViewState(
+              TaskPresenterViewState.ABORTING
+            );
+          });
+
         break;
+      }
     }
   };
 

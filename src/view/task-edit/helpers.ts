@@ -6,11 +6,17 @@ import { INewTask } from '~/common/types';
 const getClearTask = (task: IRawTask): ITask | INewTask => {
   const { isDueDate, isRepeating, ...rest } = task;
 
-  return {
+  const parsedData = {
     ...rest,
     dueDate: isDueDate ? rest.dueDate : null,
     repeating: isRepeating ? rest.repeating : TASK_DEFAULT_REPEATING,
   };
+
+  delete parsedData.isDisabled;
+  delete parsedData.isSaving;
+  delete parsedData.isDeleting;
+
+  return parsedData;
 };
 
 const getRawTask = (task: ITask | INewTask): IRawTask => {
@@ -18,6 +24,9 @@ const getRawTask = (task: ITask | INewTask): IRawTask => {
     ...task,
     isDueDate: task.dueDate !== null,
     isRepeating: checkIsTaskRepeating(task.repeating),
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   };
 
   return parsedData;
