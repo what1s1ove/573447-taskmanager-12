@@ -8,7 +8,7 @@ class Observer<T> {
     this.#observers = [];
   }
 
-  protected notify = (event: UpdateType, payload: T) => {
+  protected notify = (event: UpdateType, payload?: T) => {
     this.#observers.forEach((observer) => observer(event, payload));
   };
 

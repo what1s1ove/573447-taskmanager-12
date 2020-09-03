@@ -14,25 +14,21 @@ class Tasks extends Observer<ITask> {
     id: task.id,
     description: task.description,
     dueDate: task.due_date,
-    repeating: task.repeating,
+    repeating: task.repeating_days,
     color: task.color,
     isFavorite: task.is_favorite,
-    isArchive: task.is_archive,
+    isArchive: task.is_archived,
   });
 
   static adaptToServer = (task: ITask): IFetchedTask => ({
     id: task.id,
     description: task.description,
     due_date: task.dueDate,
-    repeating: task.repeating,
+    repeating_days: task.repeating,
     color: task.color,
     is_favorite: task.isFavorite,
-    is_archive: task.isArchive,
+    is_archived: task.isArchive,
   });
-
-  set tasks(tasks: ITask[]) {
-    this.#tasks = tasks.slice();
-  }
 
   get tasks() {
     return this.#tasks;
@@ -55,6 +51,12 @@ class Tasks extends Observer<ITask> {
 
     this.notify(type, task);
   };
+
+  public setTasks(type: UpdateType, tasks: ITask[]) {
+    this.#tasks = tasks.slice();
+
+    this.notify(type);
+  }
 }
 
 export default Tasks;

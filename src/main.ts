@@ -1,5 +1,5 @@
 import { Api } from '~/services';
-import { generateTasks, renderElement, removeElement } from '~/helpers';
+import { renderElement, removeElement } from '~/helpers';
 import {
   RenderPosition,
   MenuItem,
@@ -13,26 +13,16 @@ import FilterModel from '~/model/filter/filter';
 import SiteMenuView from '~/view/site-menu/site-menu';
 import StatisticsView from '~/view/statistics/statistics';
 
-const TASK_COUNT = 22;
-
 const AUTHORIZATION = `Basic 1488`;
 const END_POINT = `https://12.ecmascript.pages.academy/task-manager`;
 
 const siteMainNode = document.querySelector(`.main`);
 const siteHeaderNode = siteMainNode.querySelector(`.main__control`);
 
-const tasks = generateTasks(TASK_COUNT);
-
 const api = new Api(END_POINT, AUTHORIZATION);
-
-api.getTasks().then((tasks) => {
-  console.log(tasks);
-});
 
 const tasksModel = new TasksModel();
 const filterModel = new FilterModel();
-
-tasksModel.tasks = tasks;
 
 const siteMenuComponent = new SiteMenuView();
 
@@ -91,7 +81,16 @@ const changeMenuItem = (menuItem: MenuItem) => {
 };
 
 siteMenuComponent.setOnMenuClick(changeMenuItem);
-renderElement(siteHeaderNode, siteMenuComponent, RenderPosition.BEFORE_END);
 
+renderElement(siteHeaderNode, siteMenuComponent, RenderPosition.BEFORE_END);
 filterPresenter.init();
 boardPresenter.init();
+
+api
+  .getTasks()
+  .then((it) => {
+    tasksModel.setTasks(UpdateType.INIT, it);
+  })
+  .catch(() => {
+    tasksModel.setTasks(UpdateType.INIT, []);
+  });

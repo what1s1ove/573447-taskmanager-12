@@ -6,9 +6,9 @@ interface IFetchedTask {
   id: number;
   description: string;
   due_date: TaskDueDate;
-  repeating: ITaskRepeating;
+  repeating_days: ITaskRepeating;
   color: TaskColor;
-  is_archive: boolean;
+  is_archived: boolean;
   is_favorite: boolean;
 }
 
