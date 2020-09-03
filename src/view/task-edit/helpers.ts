@@ -1,9 +1,9 @@
 import { checkIsTaskRepeating } from '~/helpers';
-import { ITask } from '~/common/interfaces';
+import { ITask, IRawTask } from '~/common/interfaces';
 import { TASK_DEFAULT_REPEATING } from '~/common/constants';
-import { IRawTask } from './common';
+import { INewTask } from '~/common/types';
 
-const getClearTask = (task: IRawTask): ITask => {
+const getClearTask = (task: IRawTask): ITask | INewTask => {
   const { isDueDate, isRepeating, ...rest } = task;
 
   return {
@@ -13,7 +13,7 @@ const getClearTask = (task: IRawTask): ITask => {
   };
 };
 
-const getRawTask = (task: ITask): IRawTask => {
+const getRawTask = (task: ITask | INewTask): IRawTask => {
   const parsedData = {
     ...task,
     isDueDate: task.dueDate !== null,

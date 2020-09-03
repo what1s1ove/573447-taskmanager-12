@@ -23,7 +23,7 @@ import TaskListView from '~/view/task-list/task-list';
 import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
 import LoadingView from '~/view/loading/loading';
 import { filterToCbMap } from '~/common/maps';
-import { BindingCb } from '~/common/types';
+import { BindingCb, INewTask } from '~/common/types';
 
 const TASK_COUNT_PER_STEP = 8;
 
@@ -232,19 +232,23 @@ class Board {
   #changeViewAction = (
     actionType: UserAction,
     updateType: UpdateType,
-    task: ITask
+    task: ITask | INewTask
   ) => {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this.#api.updateTask(task).then((it) => {
+        this.#api.updateTask(task as ITask).then((it) => {
           this.#tasksModel.updateTask(updateType, it);
         });
         break;
       case UserAction.ADD_TASK:
-        this.#tasksModel.addTasks(updateType, task);
+        this.#api.addTask(task as INewTask).then((it) => {
+          this.#tasksModel.addTasks(updateType, it);
+        });
         break;
       case UserAction.DELETE_TASK:
-        this.#tasksModel.deleteTasks(updateType, task);
+        this.#api.deleteTask(task as ITask).then(() => {
+          this.#tasksModel.deleteTasks(updateType, task as ITask);
+        });
         break;
     }
   };

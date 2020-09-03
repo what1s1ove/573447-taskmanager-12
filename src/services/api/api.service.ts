@@ -2,6 +2,7 @@ import { SuccessHTTPStatusRange, HttpMethod } from '~/common/enums';
 import { ITask, IFetchedTask } from '~/common/interfaces';
 import TasksModel from '~/model/task/task';
 import { ApiRequest } from './common';
+import { INewTask } from '~/common/types';
 
 class Api {
   #endPoint: string;
@@ -60,6 +61,24 @@ class Api {
     })
       .then((res) => Api.toJSON<IFetchedTask>(res))
       .then(TasksModel.adaptToClient);
+  }
+
+  public addTask(task: INewTask) {
+    return this.#load({
+      url: `tasks`,
+      method: HttpMethod.POST,
+      body: JSON.stringify(TasksModel.adaptToSaveToServer(task)),
+      headers: new Headers({ 'Content-Type': `application/json` }),
+    })
+      .then((res) => Api.toJSON<IFetchedTask>(res))
+      .then(TasksModel.adaptToClient);
+  }
+
+  public deleteTask(task: ITask) {
+    return this.#load({
+      url: `tasks/${task.id}`,
+      method: HttpMethod.DELETE,
+    });
   }
 }
 

@@ -1,4 +1,4 @@
-import { renderElement, removeElement, getRandomId } from '~/helpers';
+import { renderElement, removeElement } from '~/helpers';
 import { ITask } from '~/common/interfaces';
 import {
   RenderPosition,
@@ -6,7 +6,7 @@ import {
   UserAction,
   UpdateType,
 } from '~/common/enums';
-import { ChangeTaskCb, BindingCb } from '~/common/types';
+import { ChangeTaskCb, BindingCb, INewTask } from '~/common/types';
 import Abstract from '~/view/abstract/abstract';
 import TaskEditView from '~/view/task-edit/task-edit';
 
@@ -32,11 +32,8 @@ class NewTask {
     this.#destroyCallback = null;
   }
 
-  #submitForm = (task: ITask) => {
-    this.#changeTask(UserAction.ADD_TASK, UpdateType.MINOR, {
-      ...task,
-      id: getRandomId(),
-    });
+  #submitForm = (task: INewTask) => {
+    this.#changeTask(UserAction.ADD_TASK, UpdateType.MINOR, task);
 
     this.destroy();
   };

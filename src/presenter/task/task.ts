@@ -11,7 +11,7 @@ import {
   UserAction,
   UpdateType,
 } from '~/common/enums';
-import { BindingCb, ChangeTaskCb } from '~/common/types';
+import { BindingCb, ChangeTaskCb, INewTask } from '~/common/types';
 import Abstract from '~/view/abstract/abstract';
 import TaskView from '~/view/task/task';
 import TaskEditView from '~/view/task-edit/task-edit';
@@ -102,7 +102,7 @@ class Task {
     });
   };
 
-  #submitForm = (task: ITask) => {
+  #submitForm = (task: ITask | INewTask) => {
     const isMinorUpdate = !checkIsDatesEqual(this.#task.dueDate, task.dueDate)
       || checkIsTaskRepeating(this.#task.repeating) !== checkIsTaskRepeating(task.repeating);
 

@@ -1,5 +1,6 @@
 import { Observer } from '~/helpers';
 import { ITask, IFetchedTask } from '~/common/interfaces';
+import { INewTask } from '~/common/types';
 import { UpdateType } from '~/common/enums';
 
 class Tasks extends Observer<ITask> {
@@ -22,6 +23,15 @@ class Tasks extends Observer<ITask> {
 
   static adaptToServer = (task: ITask): IFetchedTask => ({
     id: task.id,
+    description: task.description,
+    due_date: task.dueDate,
+    repeating_days: task.repeating,
+    color: task.color,
+    is_favorite: task.isFavorite,
+    is_archived: task.isArchive,
+  });
+
+  static adaptToSaveToServer = (task: INewTask): Partial<IFetchedTask> => ({
     description: task.description,
     due_date: task.dueDate,
     repeating_days: task.repeating,

@@ -4,21 +4,21 @@ import { Instance } from 'flatpickr/dist/types/instance';
 import 'flatpickr/dist/flatpickr.min.css';
 import Smart from '~/view/smart/smart';
 import { checkIsTaskRepeating } from '~/helpers';
-import { ITask } from '~/common/interfaces';
+import { ITask, IRawTask } from '~/common/interfaces';
 import { TaskColor, TaskRepeatDay } from '~/common/enums';
-import { BindingCbWithOne } from '~/common/types';
+import { BindingCbWithOne, INewTask } from '~/common/types';
 import { createTaskEditDateTemplate } from './templates/task-date/task-date';
 import { createTaskEditRepeatingTemplate } from './templates/task-repeating/task-repeating';
 import { createTaskEditColorsTemplate } from './templates/task-color/task-color';
 import { getRawTask, getClearTask } from './helpers';
-import { IRawTask, EMPTY_TASK } from './common';
+import { EMPTY_TASK } from './common';
 
 type Constructor = {
   task: ITask | null
 };
 
 type CallBacks = {
-  onSubmit: BindingCbWithOne<ITask>;
+  onSubmit: BindingCbWithOne<ITask | INewTask>;
   onDelete: BindingCbWithOne<ITask>;
 };
 
@@ -29,13 +29,13 @@ class TaskEdit extends Smart<IRawTask> {
 
   data: IRawTask;
 
-  static parseTaskToData(task: ITask) {
+  static parseTaskToData(task: ITask | INewTask) {
     const rawTask = getRawTask(task);
 
     return rawTask;
   }
 
-  static parseDataToTask(rawTask: ITask) {
+  static parseDataToTask(rawTask: ITask | INewTask) {
     const clearTask = getClearTask(rawTask);
 
     return clearTask;
@@ -187,7 +187,7 @@ class TaskEdit extends Smart<IRawTask> {
   };
 
   #onDelete = () => {
-    this.callbacks.onDelete(TaskEdit.parseDataToTask(this.data));
+    this.callbacks.onDelete(TaskEdit.parseDataToTask(this.data) as ITask);
   };
 
   public removeElement() {
@@ -203,7 +203,7 @@ class TaskEdit extends Smart<IRawTask> {
     this.updateData(TaskEdit.parseDataToTask(task));
   };
 
-  public setOnSubmit(callback: BindingCbWithOne<ITask>) {
+  public setOnSubmit(callback: BindingCbWithOne<ITask | INewTask>) {
     this.callbacks.onSubmit = callback;
 
     const formNode = this.node.querySelector(`.card__form`);
