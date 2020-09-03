@@ -1,5 +1,5 @@
 import { Observer } from '~/helpers';
-import { ITask } from '~/common/interfaces';
+import { ITask, IFetchedTask } from '~/common/interfaces';
 import { UpdateType } from '~/common/enums';
 
 class Tasks extends Observer<ITask> {
@@ -9,6 +9,26 @@ class Tasks extends Observer<ITask> {
     super();
     this.#tasks = [];
   }
+
+  static adaptToClient = (task: IFetchedTask): ITask => ({
+    id: task.id,
+    description: task.description,
+    dueDate: task.due_date,
+    repeating: task.repeating,
+    color: task.color,
+    isFavorite: task.is_favorite,
+    isArchive: task.is_archive,
+  });
+
+  static adaptToServer = (task: ITask): IFetchedTask => ({
+    id: task.id,
+    description: task.description,
+    due_date: task.dueDate,
+    repeating: task.repeating,
+    color: task.color,
+    is_favorite: task.isFavorite,
+    is_archive: task.isArchive,
+  });
 
   set tasks(tasks: ITask[]) {
     this.#tasks = tasks.slice();
