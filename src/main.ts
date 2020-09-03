@@ -80,9 +80,6 @@ const changeMenuItem = (menuItem: MenuItem) => {
   }
 };
 
-siteMenuComponent.setOnMenuClick(changeMenuItem);
-
-renderElement(siteHeaderNode, siteMenuComponent, RenderPosition.BEFORE_END);
 filterPresenter.init();
 boardPresenter.init();
 
@@ -93,4 +90,8 @@ api
   })
   .catch(() => {
     tasksModel.setTasks(UpdateType.INIT, []);
+  })
+  .finally(() => {
+    renderElement(siteHeaderNode, siteMenuComponent, RenderPosition.BEFORE_END);
+    siteMenuComponent.setOnMenuClick(changeMenuItem);
   });
