@@ -1,3 +1,4 @@
+import { Api } from '~/services';
 import {
   renderElement,
   removeElement,
@@ -10,6 +11,7 @@ import {
   UserAction,
   UpdateType,
   FilterType,
+  TaskState as TaskPresenterViewState,
 } from '~/common/enums';
 import TaskPresenter from '~/presenter/task/task';
 import NewTaskPresenter from '~/presenter/new-task/new-task';
@@ -20,17 +22,19 @@ import BoardView from '~/view/board/board';
 import SortView from '~/view/sort/sort';
 import TaskListView from '~/view/task-list/task-list';
 import LoadMoreButtonView from '~/view/load-more-button/load-more-button';
+import LoadingView from '~/view/loading/loading';
 import { filterToCbMap } from '~/common/maps';
-import { BindingCb } from '~/common/types';
+import { BindingCb, INewTask } from '~/common/types';
 
 const TASK_COUNT_PER_STEP = 8;
 
 const sorts = Object.values(SortType);
 
 type Constructor = {
-  containerNode: Element,
+  containerNode: HTMLElement,
   tasksModel: TaskModel,
   filterModel: FilterModel
+  api: Api
 };
 
 class Board {
@@ -46,7 +50,11 @@ class Board {
 
   #newTaskPresenter: NewTaskPresenter;
 
-  #boardContainerNode: Element;
+  #isLoading: boolean;
+
+  #api: Api;
+
+  #boardContainerNode: HTMLElement;
 
   #noTasksComponent: NoTaskView;
 
@@ -58,13 +66,22 @@ class Board {
 
   #loadMoreButtonComponent: LoadMoreButtonView | null;
 
-  constructor({ containerNode, tasksModel, filterModel }: Constructor) {
+  #loadingComponent: LoadingView;
+
+  constructor({
+    containerNode,
+    tasksModel,
+    filterModel,
+    api
+  }: Constructor) {
     this.#tasksModel = tasksModel;
     this.#filterModel = filterModel;
     this.#boardContainerNode = containerNode;
     this.#renderedTaskCount = TASK_COUNT_PER_STEP;
     this.#currentSortType = SortType.DEFAULT;
     this.#taskPresenters = {};
+    this.#isLoading = true;
+    this.#api = api;
 
     this.#sortComponent = null;
     this.#loadMoreButtonComponent = null;
@@ -72,10 +89,11 @@ class Board {
     this.#noTasksComponent = new NoTaskView();
     this.#boardComponent = new BoardView();
     this.#taskListComponent = new TaskListView();
+    this.#loadingComponent = new LoadingView();
 
     this.#newTaskPresenter = new NewTaskPresenter({
       container: this.#taskListComponent,
-      changeTask: this.#changeViewAction
+      changeTask: this.#changeViewAction,
     });
   }
 
@@ -101,6 +119,14 @@ class Board {
     renderElement(
       this.#boardComponent,
       this.#noTasksComponent,
+      RenderPosition.AFTER_BEGIN
+    );
+  };
+
+  #renderLoading = () => {
+    renderElement(
+      this.#boardComponent,
+      this.#loadingComponent,
       RenderPosition.AFTER_BEGIN
     );
   };
@@ -135,48 +161,6 @@ class Board {
     this.#taskPresenters[task.id] = taskPresenter;
   };
 
-  #changeViewAction = (
-    actionType: UserAction,
-    updateType: UpdateType,
-    task: ITask
-  ) => {
-    switch (actionType) {
-      case UserAction.UPDATE_TASK:
-        this.#tasksModel.updateTask(updateType, task);
-        break;
-      case UserAction.ADD_TASK:
-        this.#tasksModel.addTasks(updateType, task);
-        break;
-      case UserAction.DELETE_TASK:
-        this.#tasksModel.deleteTasks(updateType, task);
-        break;
-    }
-  };
-
-  #changeModelEvent = (updateType: UpdateType, update: ITask | FilterType) => {
-    switch (updateType) {
-      case UpdateType.PATCH: {
-        const task = update as ITask;
-
-        this.#taskPresenters[task.id].init(task);
-        break;
-      }
-      case UpdateType.MINOR: {
-        this.#clearBoard();
-        this.#renderBoard();
-        break;
-      }
-      case UpdateType.MAJOR: {
-        this.#clearBoard({
-          isResetRenderedTaskCount: true,
-          isResetSortType: true,
-        });
-        this.#renderBoard();
-        break;
-      }
-    }
-  };
-
   #renderTasks = (tasks: ITask[]) => {
     tasks.forEach((it) => this.#renderTask(it));
   };
@@ -197,6 +181,12 @@ class Board {
   };
 
   #renderBoard = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+
+      return;
+    }
+
     const taskCount = this.tasks.length;
 
     if (!taskCount) {
@@ -229,6 +219,7 @@ class Board {
     removeElement(this.#sortComponent);
     removeElement(this.#noTasksComponent);
     removeElement(this.#loadMoreButtonComponent);
+    removeElement(this.#loadingComponent);
 
     this.#renderedTaskCount = isResetRenderedTaskCount
       ? TASK_COUNT_PER_STEP
@@ -236,6 +227,96 @@ class Board {
 
     if (isResetSortType) {
       this.#currentSortType = SortType.DEFAULT;
+    }
+  };
+
+  #changeViewAction = (
+    actionType: UserAction,
+    updateType: UpdateType,
+    update: ITask | INewTask
+  ) => {
+    switch (actionType) {
+      case UserAction.UPDATE_TASK: {
+        const task = update as ITask;
+
+        this.#taskPresenters[task.id].setViewState(TaskPresenterViewState.SAVING);
+        this.#api
+          .updateTask(task)
+          .then((it) => {
+            this.#tasksModel.updateTask(updateType, it);
+          })
+          .catch(() => {
+            this.#taskPresenters[task.id].setViewState(
+              TaskPresenterViewState.ABORTING
+            );
+          });
+
+        break;
+      }
+      case UserAction.ADD_TASK: {
+        const task = update as INewTask;
+
+        this.#newTaskPresenter.setSaving();
+        this.#api
+          .addTask(task)
+          .then((it) => {
+            this.#tasksModel.addTasks(updateType, it);
+          })
+          .catch(() => {
+            this.#newTaskPresenter.setAborting();
+          });
+
+        break;
+      }
+      case UserAction.DELETE_TASK: {
+        const task = update as ITask;
+
+        this.#taskPresenters[task.id].setViewState(
+          TaskPresenterViewState.DELETING
+        );
+        this.#api
+          .deleteTask(task)
+          .then(() => {
+            this.#tasksModel.deleteTasks(updateType, task);
+          })
+          .catch(() => {
+            this.#taskPresenters[task.id].setViewState(
+              TaskPresenterViewState.ABORTING
+            );
+          });
+
+        break;
+      }
+    }
+  };
+
+  #changeModelEvent = (updateType: UpdateType, update: ITask | FilterType) => {
+    switch (updateType) {
+      case UpdateType.PATCH: {
+        const task = update as ITask;
+
+        this.#taskPresenters[task.id].init(task);
+        break;
+      }
+      case UpdateType.MINOR: {
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
+      }
+      case UpdateType.MAJOR: {
+        this.#clearBoard({
+          isResetRenderedTaskCount: true,
+          isResetSortType: true,
+        });
+        this.#renderBoard();
+        break;
+      }
+      case UpdateType.INIT: {
+        this.#isLoading = false;
+        removeElement(this.#loadingComponent);
+        this.#renderBoard();
+        break;
+      }
     }
   };
 
@@ -281,7 +362,7 @@ class Board {
   public destroy() {
     this.#clearBoard({
       isResetRenderedTaskCount: true,
-      isResetSortType: true
+      isResetSortType: true,
     });
 
     removeElement(this.#taskListComponent);

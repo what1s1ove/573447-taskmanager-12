@@ -12,19 +12,6 @@ abstract class Smart<T> extends Abstract {
     this.data = null;
   }
 
-  protected updateData = (dataPayload: Partial<T>, isDataUpdating = false) => {
-    this.data = {
-      ...this.data,
-      ...dataPayload,
-    };
-
-    if (isDataUpdating) {
-      return;
-    }
-
-    this.updateNode();
-  };
-
   protected updateNode = () => {
     let prevElement = this.node;
     this.removeElement();
@@ -35,6 +22,19 @@ abstract class Smart<T> extends Abstract {
     prevElement = null;
 
     this.initListeners();
+  };
+
+  public updateData = (dataPayload: Partial<T>, isDataUpdating = false) => {
+    this.data = {
+      ...this.data,
+      ...dataPayload,
+    };
+
+    if (isDataUpdating) {
+      return;
+    }
+
+    this.updateNode();
   };
 }
 

@@ -2,8 +2,8 @@
 import Abstract from '~/view/abstract/abstract';
 
 const replaceWithElement = (
-  oldChild: Element | Abstract,
-  newChild: Element | Abstract
+  oldChild: HTMLElement | Abstract,
+  newChild: HTMLElement | Abstract
 ) => {
   if (oldChild instanceof Abstract) {
     oldChild = oldChild.node;

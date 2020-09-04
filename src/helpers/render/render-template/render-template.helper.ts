@@ -1,5 +1,5 @@
 const renderTemplate = (
-  container: Element,
+  container: HTMLElement,
   template: string,
   place: InsertPosition
 ) => {

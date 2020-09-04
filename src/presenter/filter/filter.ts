@@ -9,13 +9,13 @@ import { renderElement, removeElement, replaceWithElement } from '~/helpers';
 const filters = Object.values(FilterType);
 
 type Constructor = {
-  containerNode: Element;
+  containerNode: HTMLElement;
   filterModel: FilterModel;
   tasksModel: TaskModel;
 };
 
 class Filter {
-  #filterContainer: Element;
+  #filterContainer: HTMLElement;
 
   #filterModel: FilterModel;
 
@@ -37,7 +37,30 @@ class Filter {
     this.#filterModel.addObserver(this.#changeModelEvent);
   }
 
-  init() {
+  #changeModelEvent = () => {
+    this.init();
+  };
+
+  #changeFilterType = (filterType: FilterType) => {
+    if (this.#currentFilter === filterType) {
+      return;
+    }
+
+    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+  };
+
+  #getFilterEntities = (): IFilter[] => {
+    const { tasks } = this.#tasksModel;
+
+    const filterEntities = filters.map((it) => ({
+      type: it,
+      count: filterToCbMap[it](tasks).length,
+    }));
+
+    return filterEntities;
+  };
+
+  public init() {
     this.#currentFilter = this.#filterModel.filter;
 
     const filterEntities = this.#getFilterEntities();
@@ -64,29 +87,6 @@ class Filter {
 
     removeElement(prevFilterComponent);
   }
-
-  #changeModelEvent = () => {
-    this.init();
-  };
-
-  #changeFilterType = (filterType: FilterType) => {
-    if (this.#currentFilter === filterType) {
-      return;
-    }
-
-    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
-  };
-
-  #getFilterEntities = (): IFilter[] => {
-    const { tasks } = this.#tasksModel;
-
-    const filterEntities = filters.map((it) => ({
-      type: it,
-      count: filterToCbMap[it](tasks).length,
-    }));
-
-    return filterEntities;
-  };
 }
 
 export default Filter;

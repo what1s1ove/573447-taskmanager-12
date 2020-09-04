@@ -1,12 +1,11 @@
-import { renderElement, removeElement, getRandomId } from '~/helpers';
-import { ITask } from '~/common/interfaces';
+import { renderElement, removeElement } from '~/helpers';
 import {
   RenderPosition,
   KeyboardKey,
   UserAction,
   UpdateType,
 } from '~/common/enums';
-import { ChangeTaskCb, BindingCb } from '~/common/types';
+import { ChangeTaskCb, BindingCb, INewTask } from '~/common/types';
 import Abstract from '~/view/abstract/abstract';
 import TaskEditView from '~/view/task-edit/task-edit';
 
@@ -32,13 +31,8 @@ class NewTask {
     this.#destroyCallback = null;
   }
 
-  #submitForm = (task: ITask) => {
-    this.#changeTask(UserAction.ADD_TASK, UpdateType.MINOR, {
-      ...task,
-      id: getRandomId(),
-    });
-
-    this.destroy();
+  #submitForm = (task: INewTask) => {
+    this.#changeTask(UserAction.ADD_TASK, UpdateType.MINOR, task);
   };
 
   #deleteTask = () => {
@@ -52,6 +46,25 @@ class NewTask {
       this.destroy();
     }
   };
+
+  public setSaving() {
+    this.#taskEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#taskEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this.#taskEditComponent.shake(resetFormState);
+  }
 
   public destroy() {
     if (!this.#taskEditComponent) {

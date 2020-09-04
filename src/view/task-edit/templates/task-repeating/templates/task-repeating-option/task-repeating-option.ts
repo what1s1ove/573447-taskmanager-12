@@ -1,14 +1,16 @@
 const createTaskEditRepeatingOptionTemplate = (
   day: string,
-  isRepeating: boolean
+  isRepeating: boolean,
+  isDisabled: boolean
 ) => `
   <input
+    id="repeat-${day}"
+    value="${day}"
+    ${isDisabled ? `checked` : ``}
+    ${isRepeating ? `checked` : ``}
     class="visually-hidden card__repeat-day-input"
     type="checkbox"
-    id="repeat-${day}"
     name="repeat"
-    value="${day}"
-    ${isRepeating ? `checked` : ``}
   />
   <label class="card__repeat-day" for="repeat-${day}">
     ${day}
