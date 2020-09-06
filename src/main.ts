@@ -13,7 +13,7 @@ import FilterModel from '~/model/filter/filter';
 import SiteMenuView from '~/view/site-menu/site-menu';
 import StatisticsView from '~/view/statistics/statistics';
 
-const AUTHORIZATION = `Basic 1488322`;
+const AUTHORIZATION = `Basic 14881488`;
 const END_POINT = `https://12.ecmascript.pages.academy/task-manager`;
 const STORE_PREFIX = `taskmanager-localstorage`;
 const STORE_VER = `v12`;
@@ -49,7 +49,6 @@ const filterPresenter = new FilterPresenter({
 const boardPresenter = new BoardPresenter({
   filterModel,
   tasksModel,
-  api,
   containerNode: siteMainNode,
   api: apiWithProvider,
 });
