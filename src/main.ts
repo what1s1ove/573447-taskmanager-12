@@ -49,6 +49,7 @@ const filterPresenter = new FilterPresenter({
 const boardPresenter = new BoardPresenter({
   filterModel,
   tasksModel,
+  api,
   containerNode: siteMainNode,
   api: apiWithProvider,
 });
