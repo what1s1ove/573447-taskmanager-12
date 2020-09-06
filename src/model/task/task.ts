@@ -22,7 +22,7 @@ class Tasks extends Observer<ITask> {
   });
 
   static adaptToServer = (task: ITask): IFetchedTask => ({
-    id: Number(task.id),
+    id: task.id,
     description: task.description,
     due_date: task.dueDate.toISOString(),
     repeating_days: task.repeating,

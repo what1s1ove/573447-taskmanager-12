@@ -2,7 +2,7 @@ import { TaskColor } from '~/common/enums';
 import { ITaskRepeating } from './task-repeating.interface';
 
 interface IFetchedTask {
-  id: number;
+  id: string;
   description: string;
   due_date: string;
   repeating_days: ITaskRepeating;
