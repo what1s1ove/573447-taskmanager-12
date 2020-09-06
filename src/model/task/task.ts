@@ -14,7 +14,7 @@ class Tasks extends Observer<ITask> {
   static adaptToClient = (task: IFetchedTask): ITask => ({
     id: task.id,
     description: task.description,
-    dueDate: task.due_date,
+    dueDate: new Date(task.due_date),
     repeating: task.repeating_days,
     color: task.color,
     isFavorite: task.is_favorite,
@@ -22,9 +22,9 @@ class Tasks extends Observer<ITask> {
   });
 
   static adaptToServer = (task: ITask): IFetchedTask => ({
-    id: task.id,
+    id: Number(task.id),
     description: task.description,
-    due_date: task.dueDate,
+    due_date: task.dueDate.toISOString(),
     repeating_days: task.repeating,
     color: task.color,
     is_favorite: task.isFavorite,
@@ -33,7 +33,7 @@ class Tasks extends Observer<ITask> {
 
   static adaptToSaveToServer = (task: INewTask): Partial<IFetchedTask> => ({
     description: task.description,
-    due_date: task.dueDate,
+    due_date: task.dueDate.toISOString(),
     repeating_days: task.repeating,
     color: task.color,
     is_favorite: task.isFavorite,

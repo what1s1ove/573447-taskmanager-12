@@ -1,17 +1,21 @@
-import { ITask } from '~/common/interfaces';
-import { IStorage } from './common';
+import { StoredTasks } from '~/common/types';
 
-class Store<T extends IStorage> {
-  #storage: T;
+type Constructor = {
+  key: string,
+  storage: Storage
+};
+
+class Store {
+  #storage: Storage;
 
   #storeKey: string;
 
-  constructor(key: string, storage: T) {
+  constructor({ key, storage }: Constructor) {
     this.#storage = storage;
     this.#storeKey = key;
   }
 
-  getItems() {
+  public getItems(): StoredTasks {
     try {
       return JSON.parse(this.#storage.getItem(this.#storeKey)) || {};
     } catch (err) {
@@ -19,11 +23,11 @@ class Store<T extends IStorage> {
     }
   }
 
-  setItems(items: ITask) {
+  public setItems(items: StoredTasks) {
     this.#storage.setItem(this.#storeKey, JSON.stringify(items));
   }
 
-  setItem<T>(key: string, value: T) {
+  public setItem<T>(key: string | number, value: T) {
     const store = this.getItems();
 
     this.#storage.setItem(
@@ -32,7 +36,7 @@ class Store<T extends IStorage> {
     );
   }
 
-  removeItem(key: string) {
+  public removeItem(key: string | number) {
     const store = this.getItems();
 
     delete store[key];

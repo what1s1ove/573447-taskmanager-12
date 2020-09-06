@@ -2,16 +2,21 @@ import { SuccessHTTPStatusRange, HttpMethod } from '~/common/enums';
 import { ITask, IFetchedTask } from '~/common/interfaces';
 import TasksModel from '~/model/task/task';
 import { ApiRequest } from './common';
-import { INewTask } from '~/common/types';
+import { INewTask, SyncTasksResponse } from '~/common/types';
+
+type Constructor = {
+  endPoint: string,
+  auth: string
+};
 
 class Api {
   #endPoint: string;
 
   #authorization: string;
 
-  constructor(endPoint: string, authorization: string) {
+  constructor({ endPoint, auth }: Constructor) {
     this.#endPoint = endPoint;
-    this.#authorization = authorization;
+    this.#authorization = auth;
   }
 
   static checkStatus(response: Response) {
@@ -79,6 +84,15 @@ class Api {
       url: `tasks/${task.id}`,
       method: HttpMethod.DELETE,
     });
+  }
+
+  public syncTasks(data: IFetchedTask[]) {
+    return this.#load({
+      url: `tasks/sync`,
+      method: HttpMethod.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({ 'Content-Type': `application/json` }),
+    }).then((res) => Api.toJSON<SyncTasksResponse>(res));
   }
 }
 

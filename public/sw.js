@@ -47,7 +47,7 @@ self.addEventListener(`activate`, (evt) => {
   );
 });
 
-const handleFetch = (evt) => {
+self.addEventListener(`fetch`, (evt) => {
   const { request } = evt;
 
   evt.respondWith(
@@ -75,6 +75,4 @@ const handleFetch = (evt) => {
       });
     })
   );
-};
-
-self.addEventListener(`fetch`, handleFetch);
+});

@@ -1,4 +1,4 @@
-import { Api } from '~/services';
+import { Api, Store, Provider } from '~/services';
 import { renderElement, removeElement } from '~/helpers';
 import {
   RenderPosition,
@@ -13,13 +13,27 @@ import FilterModel from '~/model/filter/filter';
 import SiteMenuView from '~/view/site-menu/site-menu';
 import StatisticsView from '~/view/statistics/statistics';
 
-const AUTHORIZATION = `Basic 1488`;
+const AUTHORIZATION = `Basic 14880`;
 const END_POINT = `https://12.ecmascript.pages.academy/task-manager`;
+const STORE_PREFIX = `taskmanager-localstorage`;
+const STORE_VER = `v12`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const siteMainNode = document.querySelector(`.main`) as HTMLElement;
 const siteHeaderNode = siteMainNode.querySelector(`.main__control`) as HTMLElement;
 
-const api = new Api(END_POINT, AUTHORIZATION);
+const api = new Api({
+  endPoint: END_POINT,
+  auth: AUTHORIZATION
+});
+const store = new Store({
+  key: STORE_NAME,
+  storage: localStorage,
+});
+const apiWithProvider = new Provider({
+  api,
+  store,
+});
 
 const tasksModel = new TasksModel();
 const filterModel = new FilterModel();
@@ -35,8 +49,8 @@ const filterPresenter = new FilterPresenter({
 const boardPresenter = new BoardPresenter({
   filterModel,
   tasksModel,
-  api,
   containerNode: siteMainNode,
+  api: apiWithProvider,
 });
 
 const closeNewTaskForm = () => {
@@ -84,7 +98,7 @@ const changeMenuItem = (menuItem: MenuItem) => {
 filterPresenter.init();
 boardPresenter.init();
 
-api
+apiWithProvider
   .getTasks()
   .then((it) => {
     tasksModel.setTasks(UpdateType.INIT, it);
@@ -96,3 +110,23 @@ api
     renderElement(siteHeaderNode, siteMenuComponent, RenderPosition.BEFORE_END);
     siteMenuComponent.setOnMenuClick(changeMenuItem);
   });
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker
+    .register(`/sw.js`)
+    .then(() => {
+      console.log(`ServiceWorker available`); // eslint-disable-line
+    })
+    .catch(() => {
+      console.error(`ServiceWorker isn't available`); // eslint-disable-line
+    });
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  apiWithProvider.syncTasks();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});

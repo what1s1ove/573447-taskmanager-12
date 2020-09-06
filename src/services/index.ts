@@ -1,3 +1,5 @@
 import Api from './api/api.service';
+import Store from './store/store.service';
+import Provider from './provider/provider.service';
 
-export { Api };
+export { Api, Store, Provider };

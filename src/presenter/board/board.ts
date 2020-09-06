@@ -1,4 +1,4 @@
-import { Api } from '~/services';
+import { Provider } from '~/services';
 import {
   renderElement,
   removeElement,
@@ -34,7 +34,7 @@ type Constructor = {
   containerNode: HTMLElement,
   tasksModel: TaskModel,
   filterModel: FilterModel
-  api: Api
+  api: Provider
 };
 
 class Board {
@@ -52,7 +52,7 @@ class Board {
 
   #isLoading: boolean;
 
-  #api: Api;
+  #api: Provider;
 
   #boardContainerNode: HTMLElement;
 
