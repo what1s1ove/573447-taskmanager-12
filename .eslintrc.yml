@@ -1,6 +1,37 @@
+extends: 'airbnb-typescript/base'
+
+parserOptions:
+  sourceType: 'module'
+  ecmaVersion: 2015
+  project: './tsconfig.json'
+
 env:
   es6: true
   browser: true
-  commonjs: true
 
-extends: 'htmlacademy/es6'
+settings:
+  import/resolver:
+    alias:
+      extensions: ['.ts']
+      map:
+        - ['~', './src']
+
+rules:
+  '@typescript-eslint/quotes':
+    - error
+    - backtick
+  no-plusplus:
+    - error
+    - allowForLoopAfterthoughts: true
+  comma-dangle:
+    - error
+    - only-multiline
+    - arrays: never
+      objects: always
+      imports: never
+      exports: never
+      functions: never
+  import/prefer-default-export: off
+  class-methods-use-this: off
+  default-case: off
+

@@ -1,0 +1,21 @@
+{
+  "include": ["src"],
+  "exclude": ["node_modules, public"],
+  "compilerOptions": {
+    "target": "ES2019",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["src/*"]
+    },
+    "noImplicitAny": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "noUnusedParameters": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "allowSyntheticDefaultImports": true
+  }
+}
